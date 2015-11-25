@@ -1,6 +1,7 @@
 package com.rnd.tms.ui.editor;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -9,10 +10,13 @@ import com.rnd.tms.data.converter.JodaDateTimeToJavaDate;
 import com.rnd.tms.data.converter.JodaDateToStringConverter;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.RawTiming;
+import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.repository.RawTimingRepository;
+import com.rnd.tms.data.repository.TimingProfileRepository;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.datefield.Resolution;
@@ -20,6 +24,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
@@ -43,6 +48,8 @@ import com.vaadin.ui.themes.ValoTheme;
 public class RawTimingEditor extends GridLayout {
 
 	private final RawTimingRepository repository;
+	@Autowired
+	private TimingProfileRepository timingProfileRepository;
 
 	/**
 	 * The currently edited rawTiming
@@ -58,7 +65,7 @@ public class RawTimingEditor extends GridLayout {
 	@PropertyId("timingProfile.client.companyName")
 	TextField companyName = new TextField("Client");
 	@PropertyId("timingProfile.profileName")
-	TextField profileName = new TextField("Profile Name");
+	ComboBox profileName = new ComboBox("Profile Name");
 	@PropertyId("timingProfile.remarks")
 	TextField remarks = new TextField("Remarks");
 	
@@ -146,6 +153,13 @@ public class RawTimingEditor extends GridLayout {
 		}
 		else {
 			rawTiming = c;
+			List<TimingProfile> timingProfiles = timingProfileRepository.findAll();
+			BeanItemContainer<TimingProfile> timingProfileContainer = 
+					   new BeanItemContainer<>(TimingProfile.class, timingProfiles);
+			//timingProfileContainer.
+			profileName.setContainerDataSource(timingProfileContainer);
+			profileName.setItemCaptionPropertyId("profileName");
+			//profileName.set
 		}
 		cancel.setVisible(persisted);
 

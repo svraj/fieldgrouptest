@@ -63,14 +63,12 @@
 			<artifactId>joda-time-hibernate</artifactId>
 			<version>1.4</version>
 		</dependency>
-		
-		<!-- <dependency>
-			<groupId>com.triumsys</groupId>
-			<artifactId>triumsys-foundation</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>timefield</artifactId>
+			<version>0.9</version>
 		</dependency>
-		 -->
-		
 
 	</dependencies>
 
@@ -95,5 +93,11 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
 
 </project>

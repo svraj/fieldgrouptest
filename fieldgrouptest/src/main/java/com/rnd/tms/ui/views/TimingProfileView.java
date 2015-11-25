@@ -2,11 +2,18 @@ package com.rnd.tms.ui.views;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.rnd.tms.data.converter.BooleanToStringConverter;
+import com.rnd.tms.data.converter.JodaDateTimeToJavaDate;
+import com.rnd.tms.data.converter.JodaDateToStringConverter;
+import com.rnd.tms.data.converter.JodaDurationToStringConverter;
 import com.rnd.tms.data.entity.Address;
-import com.rnd.tms.data.entity.Client;
+import com.rnd.tms.data.entity.Employee;
+import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.repository.TimingProfileRepository;
 import com.rnd.tms.ui.editor.TimingProfileEditor;
@@ -20,6 +27,8 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.CellReference;
+import com.vaadin.ui.Grid.CellStyleGenerator;
 import com.vaadin.ui.Grid.HeaderCell;
 import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.HorizontalLayout;
@@ -64,11 +73,11 @@ public class TimingProfileView extends VerticalLayout implements View{
 
 		grid.setHeight(300, Unit.PIXELS);
 		grid.setWidth(100, Unit.PERCENTAGE);
-		//grid.set
-		//grid.get
-		grid.setColumns("id","profileName","dailyWorkHours","maxHoursWithoutBreak","minBreakDuration","client.companyName");
+		grid.setColumns("id", "client.companyName","profileName",
+				"dailyWorkHours","minBreakDuration","maxHoursWithoutBreak",
+				"minBreakAfterMaxHoursWithoutBreak", "overtimeAllowed", "remarks");
 		
-		filter.setInputPrompt("Filter by Profile name");
+		filter.setInputPrompt("Filter by Company name");
 
 		// Hook logic to components
 
@@ -87,7 +96,8 @@ public class TimingProfileView extends VerticalLayout implements View{
 
 		// Instantiate and edit new TimingProfile the new button is clicked
 		TimingProfile newTimingProfile= new TimingProfile();
-		//newTimingProfile.setClient(new Client());
+		/*newTimingProfile.setEmployee(new Employee());
+		newTimingProfile.setTimingProfile(new TimingProfile());*/
 		addNewBtn.addClickListener(e -> editor.editTimingProfile(newTimingProfile));
 
 		// Listen changes made by the editor, refresh data from backend
@@ -102,16 +112,23 @@ public class TimingProfileView extends VerticalLayout implements View{
 
 	// tag::listTimingProfiles[]
 	private void listTimingProfiles(String text) {
+		
 		BeanItemContainer container = null;
+				
 		if (StringUtils.isEmpty(text)) {
 			container = new BeanItemContainer(TimingProfile.class, repo.findAll());
 		}
-		/*else {
-			container = new BeanItemContainer(TimingProfile.class,repo.findByCompanyNameStartsWithIgnoreCase(text));
-		}*/
 		container.addNestedContainerProperty("client.companyName");
-		//container.addNestedContainerProperty("timingProfile.profileName");
-		grid.setContainerDataSource(container);
+		
+	   grid.setContainerDataSource(container);
+       
+	   grid.getColumn("dailyWorkHours").setConverter(new JodaDurationToStringConverter());
+       grid.getColumn("minBreakDuration").setConverter(new JodaDurationToStringConverter());
+       grid.getColumn("maxHoursWithoutBreak").setConverter(new JodaDurationToStringConverter());
+       grid.getColumn("minBreakAfterMaxHoursWithoutBreak").setConverter(new JodaDurationToStringConverter());
+       grid.getColumn("overtimeAllowed").setConverter(new BooleanToStringConverter());
+       // grid.getColumn("outDateTime").setConverter(new JodaDateToStringConverter());
+		
 	}
 	// end::listTimingProfiles[]
 

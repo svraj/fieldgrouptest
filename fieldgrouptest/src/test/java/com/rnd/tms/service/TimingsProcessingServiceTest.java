@@ -13,10 +13,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import cm.rnd.tms.business.dto.TimingsProcessDTO;
-import cm.rnd.tms.business.enums.TimingRecordProcessStatus;
-
 import com.rnd.tms.FieldGroupTestApplication;
+import com.rnd.tms.business.dto.TimingsProcessDTO;
+import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 import com.rnd.tms.data.entity.BreakDetail;
 import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.RawTiming;

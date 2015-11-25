@@ -1,8 +1,8 @@
-package cm.rnd.tms.business.dto;
+package com.rnd.tms.business.dto;
 
 import org.joda.time.DateTime;
 
-import cm.rnd.tms.business.enums.TimingRecordProcessStatus;
+import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 
 
 public class RawTimingProcessResult {

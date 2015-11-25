@@ -1,8 +1,8 @@
-package cm.rnd.tms.business.dto;
+package com.rnd.tms.business.dto;
 
 import java.util.List;
 
-import cm.rnd.tms.business.enums.TimingRecordProcessStatus;
+import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 
 public class TimingsProcessDTO {
 

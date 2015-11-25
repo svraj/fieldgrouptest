@@ -9,10 +9,9 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cm.rnd.tms.business.dto.RawTimingProcessResult;
-import cm.rnd.tms.business.dto.TimingsProcessDTO;
-import cm.rnd.tms.business.enums.TimingRecordProcessStatus;
-
+import com.rnd.tms.business.dto.RawTimingProcessResult;
+import com.rnd.tms.business.dto.TimingsProcessDTO;
+import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 import com.rnd.tms.data.entity.BreakDetail;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.ProcessedTiming;

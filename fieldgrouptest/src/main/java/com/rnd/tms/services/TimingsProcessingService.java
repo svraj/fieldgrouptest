@@ -2,8 +2,7 @@ package com.rnd.tms.services;
 
 import org.joda.time.DateTime;
 
-import cm.rnd.tms.business.dto.TimingsProcessDTO;
-
+import com.rnd.tms.business.dto.TimingsProcessDTO;
 import com.rnd.tms.data.entity.BreakDetail;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.RawTiming;

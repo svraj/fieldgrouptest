@@ -1,4 +1,4 @@
-package cm.rnd.tms.business.enums;
+package com.rnd.tms.business.enums;
 
 public enum TimingRecordProcessStatus {
 

@@ -128,7 +128,9 @@ public class EmployeeEditor extends GridLayout {
 			}
 		}
 		BeanFieldGroup.bindFieldsUnbuffered(employee, this);
-		BeanFieldGroup.bindFieldsUnbuffered(employee.getAddress(), this);
+		if(employee.getAddress()!=null){
+			BeanFieldGroup.bindFieldsUnbuffered(employee.getAddress(), this);
+		}
 		//BeanFieldGroup.this.getFieldFactory().
 		/*BeanItem<Employee> item =  new BeanItem<Employee>(employee);
 		item.addNestedProperty("address.streetNoName");

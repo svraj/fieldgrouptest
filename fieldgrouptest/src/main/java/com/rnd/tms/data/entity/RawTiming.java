@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 public class RawTiming extends BaseEntity implements Serializable{
 
 	//@Column
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade=CascadeType.MERGE)
 	private Employee employee;
 	
 	@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
@@ -36,7 +36,7 @@ public class RawTiming extends BaseEntity implements Serializable{
 	@JoinColumn(name="raw_timing_id")
 	private List<BreakDetail> breakDetails;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade=CascadeType.MERGE)
 	private TimingProfile timingProfile;
 	
 	public TimingProfile getTimingProfile() {

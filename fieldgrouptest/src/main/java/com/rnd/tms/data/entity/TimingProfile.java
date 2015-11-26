@@ -10,7 +10,7 @@ import org.joda.time.Duration;
 public class TimingProfile extends BaseEntity{
 	
 
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne
 	private Client client;
 	
 	private String profileName;

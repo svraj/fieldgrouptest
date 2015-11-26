@@ -16,6 +16,7 @@ import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.repository.EmployeeRepository;
 import com.rnd.tms.data.repository.RawTimingRepository;
 import com.rnd.tms.data.repository.TimingProfileRepository;
+import com.rnd.tms.ui.TmsUiUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -44,11 +45,11 @@ import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * A simple example to introduce building forms. As your real application is
- * probably much more complicated than this example, you could re-use this form in
- * multiple places. This example component is only used in VaadinUI.
+ * probably much more complicated than this example, you could re-use this form
+ * in multiple places. This example component is only used in VaadinUI.
  * <p>
- * In a real world application you'll most likely using a common super class for all your
- * forms - less code, better UX. See e.g. AbstractForm in Virin
+ * In a real world application you'll most likely using a common super class for
+ * all your forms - less code, better UX. See e.g. AbstractForm in Virin
  * (https://vaadin.com/addon/viritin).
  */
 @SpringComponent
@@ -69,85 +70,89 @@ public class RawTimingEditor extends GridLayout {
 	HorizontalLayout rawTimingLayout = new HorizontalLayout();
 	DateField inDateTime = new DateField("In Date Time");
 	DateField outDateTime = new DateField("Out Date Time");
-	
-	
+
 	HorizontalLayout timingProfileLayout = new HorizontalLayout();
+
 	@PropertyId("timingProfile.client.companyName")
 	TextField companyName = new TextField("Client");
-	@PropertyId("timingProfile")
-	ComboBox profileName = new ComboBox("Profile Name");
+
+	// @PropertyId("timingProfile")
+	ComboBox timingProfile = new ComboBox("Profile Name");
+
 	@PropertyId("timingProfile.remarks")
 	TextField remarks = new TextField("Remarks");
-	
+
 	HorizontalLayout employeeLayout = new HorizontalLayout();
-	//@PropertyId("employee.firstName")
-	ComboBox employee= new ComboBox("Employee");
-	//@PropertyId("employee.lastName")
-	//TextField  lastName = new TextField("Employee Last name");
+	// @PropertyId("employee.firstName")
+	ComboBox employee = new ComboBox("Employee");
+	// @PropertyId("employee.lastName")
+	// TextField lastName = new TextField("Employee Last name");
 
 	HorizontalLayout buttonLayout = new HorizontalLayout();
 	Button save = new Button("Save", FontAwesome.SAVE);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", FontAwesome.TRASH_O);
-	//CssLayout actions = new CssLayout(save, cancel, delete);
+
+	// CssLayout actions = new CssLayout(save, cancel, delete);
 
 	@Autowired
 	public RawTimingEditor(RawTimingRepository repository) {
-		super(2,4);
+		super(2, 4);
 		this.repository = repository;
 		setSpacing(true);
 		setSizeFull();
-		
+
 		employeeLayout.setSpacing(true);
 		employeeLayout.addComponents(employee);
 		addComponent(employeeLayout);
-		
+
 		timingProfileLayout.setSpacing(true);
 		companyName.setReadOnly(true);
 		remarks.setReadOnly(true);
-		timingProfileLayout.addComponents(profileName,companyName,remarks);
+		timingProfileLayout.addComponents(timingProfile, companyName, remarks);
 		addComponent(timingProfileLayout);
-		
+
 		rawTimingLayout.setSpacing(true);
-		rawTimingLayout.addComponents(inDateTime,outDateTime);
+		rawTimingLayout.addComponents(inDateTime, outDateTime);
 		addComponent(rawTimingLayout);
-		
+
 		buttonLayout.setSpacing(true);
-		
+
 		buttonLayout.addComponents(save, cancel, delete);
 		addComponent(buttonLayout);
 		setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
-		
+
 		inDateTime.setDateFormat("E MM/dd/yyyy HH:mm");
 		outDateTime.setDateFormat("E MM/dd/yyyy HH:mm");
 		inDateTime.setResolution(Resolution.MINUTE);
 		outDateTime.setResolution(Resolution.MINUTE);
 		inDateTime.setConverter(new JodaDateTimeToJavaDate());
 		outDateTime.setConverter(new JodaDateTimeToJavaDate());
-		
+
 		// Configure and style components
-		
-		//actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-		
+
+		// actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+
 		save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		
-		//addComponent(actions);
-		// wire action buttons to save, delete and reset
-		save.addClickListener(e -> repository.save(rawTiming));
-		delete.addClickListener(e -> repository.delete(rawTiming));
-		//cancel.addClickListener(e -> editRawTiming(Ccient));
-		cancel.addClickListener(e -> cancelSaveEdit());
+
 		setVisible(false);
 	}
-	
+
 	@PostConstruct
-	private void initComponents(){
+	private void initComponents() {
 		prepareTimingProfileCombo();
 		prepareEmployeeCombo();
 		styleComponents();
+		registerListeners();
+		TmsUiUtils.setTextFieldNullRepresentation(this);
+
 	}
 
-
+	private void registerListeners() {
+		save.addClickListener(e -> repository.save(rawTiming));
+		delete.addClickListener(e -> repository.delete(rawTiming));
+		cancel.addClickListener(e -> cancelSaveEdit());
+	}
 
 	private void styleComponents() {
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -167,55 +172,41 @@ public class RawTimingEditor extends GridLayout {
 		if (persisted) {
 			// Find fresh entity for editing
 			rawTiming = repository.findOne(c.getId());
-		}
-		else {
+		} else {
 			rawTiming = c;
-			//prepareTimingProfileCombo();
+			initComponents();
 		}
 		cancel.setVisible(persisted);
 
-		// Bind RawTiming properties to similarly named fields
-		// Could also use annotation or "manual binding" or programmatically
-		// moving values from fields to entities before saving
-		
-		setTextFieldNullRepresentation();
-		
-		BeanFieldGroup<RawTiming> rawTimingBinder = new BeanFieldGroup<RawTiming>(RawTiming.class);
+		BeanFieldGroup<RawTiming> rawTimingBinder = new BeanFieldGroup<RawTiming>(
+				RawTiming.class);
 		rawTimingBinder.bindMemberFields(this);
 		rawTimingBinder.setItemDataSource(rawTiming);
 		rawTimingBinder.setBuffered(false);
 		setVisible(true);
-		// A hack to ensure the whole form is visible
 		save.focus();
 	}
 
 	private void prepareTimingProfileCombo() {
 		List<TimingProfile> timingProfiles = timingProfileRepository.findAll();
-		BeanItemContainer<TimingProfile> timingProfileContainer = new BeanItemContainer<TimingProfile>(TimingProfile.class, timingProfiles);
-		//profileName.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		profileName.setItemCaptionPropertyId("profileName");
-		profileName.setContainerDataSource(timingProfileContainer);
-	}
-	
-	private void prepareEmployeeCombo() {
-		List<Employee> employees = employeeRepository.findAll();
-		BeanItemContainer<Employee> employeeContainer = 
-				   new BeanItemContainer<Employee>(Employee.class, employees);
-		//employee.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		employee.setItemCaptionPropertyId("firstName");
-		employee.setContainerDataSource(employeeContainer);
+		BeanItemContainer<TimingProfile> timingProfileContainer = new BeanItemContainer<TimingProfile>(
+				TimingProfile.class, timingProfiles);
+		// timingProfile.setItemCaptionMode(ItemCaptionMode.PROPERTY);
+
+		timingProfile.setItemCaptionPropertyId("profileName");
+		timingProfile.setContainerDataSource(timingProfileContainer);
+		timingProfile.setBuffered(false);
+		timingProfile.setImmediate(true);
 	}
 
-	private void setTextFieldNullRepresentation() {
-		Iterator<Component> componentIterator = this.getComponentIterator();
-		Component component = (Component)componentIterator.next();
-		while(componentIterator.hasNext()){
-			component = (Component)componentIterator.next();
-			if(component instanceof TextField){
-				TextField field = (TextField)component;
-				field.setNullRepresentation("");
-			}
-		}
+	private void prepareEmployeeCombo() {
+		List<Employee> employees = employeeRepository.findAll();
+		BeanItemContainer<Employee> employeeContainer = new BeanItemContainer<Employee>(
+				Employee.class, employees);
+		// employee.setItemCaptionMode(ItemCaptionMode.ID);
+		employee.setItemCaptionPropertyId("firstName");
+		employee.setContainerDataSource(employeeContainer);
+		employee.setImmediate(true);
 	}
 
 	public void setChangeHandler(ChangeHandler h) {

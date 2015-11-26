@@ -29,6 +29,7 @@ import com.vaadin.ui.Grid.CellReference;
 import com.vaadin.ui.Grid.CellStyleGenerator;
 import com.vaadin.ui.Grid.HeaderCell;
 import com.vaadin.ui.Grid.HeaderRow;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -71,9 +72,9 @@ public class RawTimingView extends VerticalLayout implements View{
 
 		grid.setHeight(300, Unit.PIXELS);
 		grid.setWidth(100, Unit.PERCENTAGE);
-		grid.setColumns("id", "employee.firstName","employee.LastName","timingProfile.profileName","timingProfile.client.companyName",
-				"timingProfile.remarks","inDateTime", "outDateTime");
-		
+		grid.setColumns("id", "employee.firstName","employee.LastName","timingProfile.profileName",
+				"inDateTime", "outDateTime");
+		grid.addStyleName(ValoTheme.TABLE_BORDERLESS);
 		filter.setInputPrompt("Filter by Company name");
 
 		// Hook logic to components
@@ -118,8 +119,8 @@ public class RawTimingView extends VerticalLayout implements View{
 		container.addNestedContainerProperty("employee.firstName");
 		container.addNestedContainerProperty("employee.LastName");
 		container.addNestedContainerProperty("timingProfile.profileName");
-		container.addNestedContainerProperty("timingProfile.client.companyName");
-		container.addNestedContainerProperty("timingProfile.remarks");
+		//container.addNestedContainerProperty("timingProfile.client.companyName");
+		//container.addNestedContainerProperty("timingProfile.remarks");
 		
 		grid.setContainerDataSource(container);
 		

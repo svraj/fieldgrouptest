@@ -1,6 +1,9 @@
 package com.rnd.tms.ui.editor;
 
 import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,12 +11,17 @@ import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 import com.rnd.tms.data.converter.JodaDateTimeToJavaDate;
 import com.rnd.tms.data.converter.JodaDateToStringConverter;
 import com.rnd.tms.data.converter.JodaDurationToStringConverter;
+import com.rnd.tms.data.entity.Client;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.TimingProfile;
+import com.rnd.tms.data.repository.ClientRepository;
 import com.rnd.tms.data.repository.TimingProfileRepository;
+import com.rnd.tms.ui.TmsUiUtils;
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.datefield.Resolution;
@@ -22,6 +30,7 @@ import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
@@ -42,9 +51,13 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SpringComponent
 @ViewScope
+@Theme("tms")
 public class TimingProfileEditor extends GridLayout {
 
 	private final TimingProfileRepository repository;
+	
+	@Autowired
+	private ClientRepository clientRepository;
 
 	/**
 	 * The currently edited timingProfile
@@ -52,7 +65,7 @@ public class TimingProfileEditor extends GridLayout {
 	private TimingProfile timingProfile;
 
 	//HorizontalLayout timingProfileLayout = new HorizontalLayout();
-	@PropertyId("profileName")
+	//@PropertyId("profileName")
 	TextField profileName = new TextField("Profile Name");
 	@PropertyId("dailyWorkHours")
 	TextField dailyWorkHours = new TextField("Daily Work Hrs");
@@ -70,8 +83,8 @@ public class TimingProfileEditor extends GridLayout {
 	
 	
 	HorizontalLayout clientLayout = new HorizontalLayout();
-	@PropertyId("client.companyName")
-	TextField companyName = new TextField("Client");
+	//@PropertyId("client.companyName")
+	ComboBox client = new ComboBox("Client");
 	
 	HorizontalLayout buttonLayout = new HorizontalLayout();
 	Button save = new Button("Save", FontAwesome.SAVE);
@@ -87,9 +100,10 @@ public class TimingProfileEditor extends GridLayout {
 		setSizeFull();
 		
 		addComponents(profileName,dailyWorkHours,minBreakDuration,maxHoursWithoutBreak,minBreakAfterMaxHoursWithoutBreak,overtimeAllowed,remarks);
+		setComponentAlignment(overtimeAllowed,Alignment.MIDDLE_LEFT);
 		
 		clientLayout.setSpacing(true);
-		clientLayout.addComponents(companyName);
+		clientLayout.addComponents(client);
 		addComponent(clientLayout);
 		
 		buttonLayout.setSpacing(true);
@@ -97,32 +111,42 @@ public class TimingProfileEditor extends GridLayout {
 		addComponent(buttonLayout);
 		setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
 		
-		
 		dailyWorkHours.setConverter(new JodaDurationToStringConverter());
 		minBreakDuration.setConverter(new JodaDurationToStringConverter());
 		maxHoursWithoutBreak.setConverter(new JodaDurationToStringConverter());
 		minBreakAfterMaxHoursWithoutBreak.setConverter(new JodaDurationToStringConverter());
 		
-		/*inDateTime.setDateFormat("E MM/dd/yyyy HH:mm");
-		outDateTime.setDateFormat("E MM/dd/yyyy HH:mm");
-		inDateTime.setResolution(Resolution.MINUTE);
-		outDateTime.setResolution(Resolution.MINUTE);
-		inDateTime.setConverter(new JodaDateTimeToJavaDate());
-		*/
-		
-		// Configure and style components
-		
-		//actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		setVisible(false);
+	}
+	
+	@PostConstruct
+	private void initComponents(){
+		prepareClientCombo();
+		styleComponents();
+		registerListeners();
+		TmsUiUtils.setTextFieldNullRepresentation(this);
+	}
+	
+	private void registerListeners() {
 		save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		delete.setStyleName(ValoTheme.BUTTON_DANGER);
-		//addComponent(actions);
-		// wire action buttons to save, delete and reset
 		save.addClickListener(e -> repository.save(timingProfile));
 		delete.addClickListener(e -> repository.delete(timingProfile));
-		//cancel.addClickListener(e -> editTimingProfile(Ccient));
 		cancel.addClickListener(e -> cancelSaveEdit());
-		setVisible(false);
+	}
+
+	private void prepareClientCombo() {
+		List<Client> clients = clientRepository.findAll();
+		BeanItemContainer<Client> clientContainer = new BeanItemContainer<Client>(Client.class, clients);
+		client.setItemCaptionPropertyId("companyName");
+		client.setContainerDataSource(clientContainer);
+		client.setBuffered(false);
+		client.setImmediate(true);
+	}
+	
+	private void styleComponents() {
+		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		delete.setStyleName(ValoTheme.BUTTON_DANGER);
+		addStyleName("bordered");
 	}
 
 	public final void cancelSaveEdit() {
@@ -144,17 +168,8 @@ public class TimingProfileEditor extends GridLayout {
 			timingProfile = c;
 		}
 		cancel.setVisible(persisted);
-
-		Iterator<Component> componentIterator = this.getComponentIterator();
-		Component component = (Component)componentIterator.next();
-		while(componentIterator.hasNext()){
-			component = (Component)componentIterator.next();
-			if(component instanceof TextField){
-				TextField field = (TextField)component;
-				field.setNullRepresentation("");
-			}
-		}
 		
+	
 		BeanFieldGroup<TimingProfile> timingProfileBinder = new BeanFieldGroup<TimingProfile>(TimingProfile.class);
 		timingProfileBinder.bindMemberFields(this);
 		timingProfileBinder.setItemDataSource(timingProfile);
@@ -162,6 +177,9 @@ public class TimingProfileEditor extends GridLayout {
 		setVisible(true);
 		save.focus();
 	}
+	
+	
+
 
 	public void setChangeHandler(ChangeHandler h) {
 		// ChangeHandler is notified when either save or delete

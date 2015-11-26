@@ -3,15 +3,21 @@ package com.rnd.tms.ui.editor;
 import java.util.Iterator;
 
 
+
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rnd.tms.data.entity.Client;
 import com.rnd.tms.data.repository.ClientRepository;
+import com.rnd.tms.ui.TmsUiUtils;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.ViewScope;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -64,27 +70,34 @@ public class ClientEditor extends GridLayout {
 		this.repository = repository;
 		setSpacing(true);
 		setSizeFull();
-		
-		//setColumnExpandRatio(1, 0.5f);
-		//CcientCode.setSizeFull();
-		//addComponent(CcientCode,0,0,1,1);
+
 		addComponents(companyName, contactNumber);
 		addComponents(unitNumber,streetNoName, suburb, state,postCode,country);
 		addComponent(actions);
 		
-		// Configure and style components
-		
-		actions.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		setComponentAlignment(actions, Alignment.BOTTOM_LEFT);
 		save.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-		delete.setStyleName(ValoTheme.BUTTON_DANGER);
-		//addComponent(actions);
-		// wire action buttons to save, delete and reset
+		
+		setVisible(false);
+	}
+	
+	@PostConstruct
+	private void initComponents(){
+		styleComponents();
+		registerListeners();
+		TmsUiUtils.setTextFieldNullRepresentation(this);
+	}
+	
+	private void registerListeners() {
 		save.addClickListener(e -> repository.save(client));
 		delete.addClickListener(e -> repository.delete(client));
-		//cancel.addClickListener(e -> editClient(Ccient));
 		cancel.addClickListener(e -> cancelSaveEdit());
-		setVisible(false);
+	}
+
+
+	private void styleComponents() {
+		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		delete.setStyleName(ValoTheme.BUTTON_DANGER);
 	}
 
 	public final void cancelSaveEdit() {
@@ -107,42 +120,14 @@ public class ClientEditor extends GridLayout {
 		}
 		cancel.setVisible(persisted);
 
-		// Bind Client properties to similarly named fields
-		// Could also use annotation or "manual binding" or programmatically
-		// moving values from fields to entities before saving
-		Iterator<Component> componentIterator = this.getComponentIterator();
-		Component component = (Component)componentIterator.next();
-		while(componentIterator.hasNext()){
-			component = (Component)componentIterator.next();
-			if(component instanceof TextField){
-				TextField field = (TextField)component;
-				field.setNullRepresentation("");
-			}
-		}
 		BeanFieldGroup.bindFieldsUnbuffered(client, this);
 		if(client.getAddress()!=null){
 			BeanFieldGroup.bindFieldsUnbuffered(client.getAddress(), this);
 		}
-		//BeanFieldGroup.this.getFieldFactory().
-		/*BeanItem<Client> item =  new BeanItem<Client>(Ccient);
-		item.addNestedProperty("address.streetNoName");
-		item.addNestedProperty("address.suburb");
-		item.addNestedProperty("address.state");
-		item.addNestedProperty("address.postCode");
-		item.addNestedProperty("address.country");
-		
-		BeanFieldGroup<Client> beanFieldGroup = new BeanFieldGroup<Client>(Client.class);
-		
-		
-		for(Object propertyId:item.getItemPropertyIds() ){
-			addComponent(beanFieldGroup.buildAndBind(propertyId));
-		}*/
 
 		setVisible(true);
 		
-		// A hack to ensure the whole form is visible
 		save.focus();
-		// Select all text in firstName field automatically
 		companyName.selectAll();
 	}
 

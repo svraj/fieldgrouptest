@@ -36,6 +36,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = TimingProfileView.VIEW_NAME)
+@Theme("tms")
 public class TimingProfileView extends VerticalLayout implements View{
 
 	public static final String VIEW_NAME = "timing_profile";
@@ -63,6 +64,7 @@ public class TimingProfileView extends VerticalLayout implements View{
 	void init() {
 		// build layout
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
+		editor.addStyleName("bordered");
 		VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
 		addComponent(mainLayout);
 
@@ -74,8 +76,7 @@ public class TimingProfileView extends VerticalLayout implements View{
 		grid.setHeight(300, Unit.PIXELS);
 		grid.setWidth(100, Unit.PERCENTAGE);
 		grid.setColumns("id", "client.companyName","profileName",
-				"dailyWorkHours","minBreakDuration","maxHoursWithoutBreak",
-				"minBreakAfterMaxHoursWithoutBreak", "overtimeAllowed", "remarks");
+				"dailyWorkHours","minBreakDuration","overtimeAllowed");
 		
 		filter.setInputPrompt("Filter by Company name");
 
@@ -124,8 +125,8 @@ public class TimingProfileView extends VerticalLayout implements View{
        
 	   grid.getColumn("dailyWorkHours").setConverter(new JodaDurationToStringConverter());
        grid.getColumn("minBreakDuration").setConverter(new JodaDurationToStringConverter());
-       grid.getColumn("maxHoursWithoutBreak").setConverter(new JodaDurationToStringConverter());
-       grid.getColumn("minBreakAfterMaxHoursWithoutBreak").setConverter(new JodaDurationToStringConverter());
+       //grid.getColumn("maxHoursWithoutBreak").setConverter(new JodaDurationToStringConverter());
+       //grid.getColumn("minBreakAfterMaxHoursWithoutBreak").setConverter(new JodaDurationToStringConverter());
        grid.getColumn("overtimeAllowed").setConverter(new BooleanToStringConverter());
        // grid.getColumn("outDateTime").setConverter(new JodaDateToStringConverter());
 		

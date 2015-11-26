@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.repository.TimingProfileRepository;
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
@@ -20,6 +21,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
 @SpringView(name = DefaultView.VIEW_NAME)
+@Theme("tms")
 public class DefaultView extends VerticalLayout implements View {
     public static final String VIEW_NAME = "";
     
@@ -30,6 +32,7 @@ public class DefaultView extends VerticalLayout implements View {
 
     @PostConstruct
     void init() {
+    	
         addComponent(new Label("This is the default view"));
         List<TimingProfile> timingProfiles = timingProfileRepository.findAll();
 		BeanItemContainer<TimingProfile> timingProfileContainer = 
@@ -39,7 +42,7 @@ public class DefaultView extends VerticalLayout implements View {
 		profileName.setContainerDataSource(timingProfileContainer);
 		
 		profileName.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		profileName.setItemCaptionPropertyId("profileName");
+		profileName.setItemCaptionPropertyId("timingProfile");
 		
 		profileName.addValueChangeListener(new ValueChangeListener() {
 			
@@ -52,7 +55,7 @@ public class DefaultView extends VerticalLayout implements View {
 		});
 		
 		addComponent(profileName);
-		//profileName.set
+		//timingProfile.set
     }
 
     @Override

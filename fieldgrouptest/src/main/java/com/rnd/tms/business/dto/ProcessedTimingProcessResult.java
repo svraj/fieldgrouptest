@@ -5,12 +5,12 @@ import org.joda.time.DateTime;
 import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 
 
-public class RawTimingProcessResult {
+public class ProcessedTimingProcessResult {
 
 	private Long employeeId;
 	private DateTime dateOfWork;
 	private Long timingProfileId;
-	private Long rawTimingId;
+	private Long processedTimingId;
 	private TimingRecordProcessStatus processStatus;
 	private String remarks;
 	
@@ -32,11 +32,11 @@ public class RawTimingProcessResult {
 	public void setTimingProfileId(Long timingProfileId) {
 		this.timingProfileId = timingProfileId;
 	}
-	public Long getRawTimingId() {
-		return rawTimingId;
+	public Long getProcessedTimingId() {
+		return processedTimingId;
 	}
-	public void setRawTimingId(Long rawTimingId) {
-		this.rawTimingId = rawTimingId;
+	public void setProcessedTimingId(Long processedTimingId) {
+		this.processedTimingId = processedTimingId;
 	}
 	public TimingRecordProcessStatus getProcessStatus() {
 		return processStatus;

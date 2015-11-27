@@ -17,12 +17,13 @@ import com.rnd.tms.FieldGroupTestApplication;
 import com.rnd.tms.business.dto.TimingsProcessDTO;
 import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 import com.rnd.tms.data.entity.BreakDetail;
+import com.rnd.tms.data.entity.Client;
 import com.rnd.tms.data.entity.ProcessedTiming;
-import com.rnd.tms.data.entity.RawTiming;
 import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.enums.BreakType;
 import com.rnd.tms.data.repository.BreakDetailRepository;
-import com.rnd.tms.data.repository.RawTimingRepository;
+import com.rnd.tms.data.repository.ClientRepository;
+import com.rnd.tms.data.repository.ProcessedTimingRepository;
 import com.rnd.tms.data.util.TMSTestUtil;
 import com.rnd.tms.exceptions.TmsBusinessException;
 import com.rnd.tms.services.TimingsProcessingService;
@@ -35,27 +36,32 @@ public class TimingsProcessingServiceTest {
 	private TimingsProcessingService timingsProcessingService;
 	
 	@Autowired
-	private RawTimingRepository rawTimingRepository;
+	private ProcessedTimingRepository processedTimingRepository;
 
 	@Autowired
 	private BreakDetailRepository breakDetailRepository;
 	
+	@Autowired 
+	private ClientRepository clientRepository;
+	
 	@Test
 	@Transactional
 	public void testCalculateAndUpdateBreak(){
-		RawTiming rawTiming = null;
+		ProcessedTiming processedTiming = null;
 
-		if(rawTimingRepository.findAll().size()!=0){
-			rawTiming = rawTimingRepository.findAll().get(0);
+		if(processedTimingRepository.findAll().size()!=0){
+			processedTiming = processedTimingRepository.findAll().get(0);
 		}else{
-			rawTiming = TMSTestUtil.createRawTimingWithBreaks();
-			rawTiming = rawTimingRepository.save(rawTiming);
+			processedTiming = TMSTestUtil.createProcessedTimingWithBreaks();
+			processedTiming = processedTimingRepository.save(processedTiming);
 		}
 		
 		BreakDetail breakDetail = new BreakDetail(BreakType.DINNER, new DateTime(2015,11,17,21,00), new DateTime(2015,11,17,21,50));
-		breakDetail.setRawTiming(rawTiming);
+		breakDetail.setProcessedTiming(processedTiming);
 		breakDetail = breakDetailRepository.save(breakDetail);
-		TimingProfile timingProfile = TMSTestUtil.getDummyTimingProfile();
+		Client client = new Client("ClientCreatedForDummyTimingProfile");
+		client = clientRepository.save(client);
+		TimingProfile timingProfile = TMSTestUtil.getDummyTimingProfile(client);
 		try {
 			breakDetail = timingsProcessingService.calculateAndUpdateBreakDetail(breakDetail, timingProfile);
 		} catch (TmsBusinessException e) {
@@ -70,12 +76,12 @@ public class TimingsProcessingServiceTest {
 	@Transactional
 	public void testProcessedTimingCalculationWithoutTimingProfile(){
 		
-		RawTiming rawTiming = TMSTestUtil.createRawTimingWithSingleLunchBreakWithDuration(new Duration(25*60*1000));
-		rawTimingRepository.save(rawTiming);
+		ProcessedTiming processedTiming = TMSTestUtil.createProcessedTimingWithSingleLunchBreakWithDuration(new Duration(25*60*1000));
+		processedTimingRepository.save(processedTiming);
 		
 		TimingsProcessDTO timingsProcessDTO = null;
 		try{
-			timingsProcessDTO = timingsProcessingService.processRawTiming(rawTiming);
+			timingsProcessDTO = timingsProcessingService.processProcessedTiming(processedTiming);
 		}catch (TmsBusinessException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -83,18 +89,20 @@ public class TimingsProcessingServiceTest {
 		
 		assertNotNull(timingsProcessDTO);
 		assertEquals(timingsProcessDTO.getProcessStatus(),TimingRecordProcessStatus.FAILED);
-		assertEquals(1,timingsProcessDTO.getRawTimingProcessResults().size());
+		assertEquals(1,timingsProcessDTO.getProcessedTimingProcessResults().size());
 	}
 	
 	@Test
 	@Transactional
 	public void testProcessedTimingCalculationWithTimingProfile(){
-		RawTiming rawTiming = TMSTestUtil.createRawTimingWithTimingProfileAndSingleLunchBreakWithDuration(new Duration(25*60*1000));
-		rawTimingRepository.save(rawTiming);
+		Client client = new Client("ClientCreatedForDummyTimingProfile");
+		client = clientRepository.save(client);
+		ProcessedTiming processedTiming = TMSTestUtil.createProcessedTimingWithTimingProfileAndSingleLunchBreakWithDuration(client,new Duration(25*60*1000));
+		processedTimingRepository.save(processedTiming);
 		
 		TimingsProcessDTO timingsProcessDTO = null;
 		try{
-			timingsProcessDTO = timingsProcessingService.processRawTiming(rawTiming);
+			timingsProcessDTO = timingsProcessingService.processProcessedTiming(processedTiming);
 		}catch (TmsBusinessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -102,18 +110,18 @@ public class TimingsProcessingServiceTest {
 		
 		assertNotNull(timingsProcessDTO);
 		assertEquals(null,timingsProcessDTO.getProcessStatus());
-		assertEquals(null,timingsProcessDTO.getRawTimingProcessResults());
+		assertEquals(null,timingsProcessDTO.getProcessedTimingProcessResults());
 	}
 	
 	@Test
 	@Transactional
 	public void testProcessedTimingCalculationWithIncorrectTimingProfileNoDailyHours(){
-		RawTiming rawTiming = TMSTestUtil.createRawTimingWithIncorrectTimingProfileNoDailyHours();
-		rawTimingRepository.save(rawTiming);
+		ProcessedTiming processedTiming = TMSTestUtil.createProcessedTimingWithIncorrectTimingProfileNoDailyHours();
+		processedTimingRepository.save(processedTiming);
 		
 		TimingsProcessDTO timingsProcessDTO = null;
 		try{
-			timingsProcessDTO = timingsProcessingService.processRawTiming(rawTiming);
+			timingsProcessDTO = timingsProcessingService.processProcessedTiming(processedTiming);
 		}catch (TmsBusinessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,19 +129,19 @@ public class TimingsProcessingServiceTest {
 		
 		assertNotNull(timingsProcessDTO);
 		assertEquals(timingsProcessDTO.getProcessStatus(),TimingRecordProcessStatus.FAILED);
-		assertEquals(1,timingsProcessDTO.getRawTimingProcessResults().size());
-		assertEquals("DailyWorkingHours in TimingProfile not set",timingsProcessDTO.getRawTimingProcessResults().get(0).getRemarks());
+		assertEquals(1,timingsProcessDTO.getProcessedTimingProcessResults().size());
+		assertEquals("DailyWorkingHours in TimingProfile not set",timingsProcessDTO.getProcessedTimingProcessResults().get(0).getRemarks());
 	}
 	
 	@Test
 	@Transactional
 	public void testProcessedTimingCalculationWithIncorrectTimingProfileNoBreakValues(){
-		RawTiming rawTiming = TMSTestUtil.createRawTimingWithIncorrectTimingProfileNoBreakValues();
-		rawTimingRepository.save(rawTiming);
+		ProcessedTiming processedTiming = TMSTestUtil.createProcessedTimingWithIncorrectTimingProfileNoBreakValues();
+		processedTimingRepository.save(processedTiming);
 		
 		TimingsProcessDTO timingsProcessDTO = null;
 		try{
-			timingsProcessDTO = timingsProcessingService.processRawTiming(rawTiming);
+			timingsProcessDTO = timingsProcessingService.processProcessedTiming(processedTiming);
 		}catch (TmsBusinessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,7 +149,7 @@ public class TimingsProcessingServiceTest {
 		
 		assertNotNull(timingsProcessDTO);
 		assertEquals(timingsProcessDTO.getProcessStatus(),TimingRecordProcessStatus.FAILED);
-		assertEquals(1,timingsProcessDTO.getRawTimingProcessResults().size());
+		assertEquals(1,timingsProcessDTO.getProcessedTimingProcessResults().size());
 	}
 
 }

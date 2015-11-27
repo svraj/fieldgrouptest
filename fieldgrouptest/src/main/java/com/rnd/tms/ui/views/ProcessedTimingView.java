@@ -2,46 +2,37 @@ package com.rnd.tms.ui.views;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import com.rnd.tms.data.converter.JodaDateTimeToJavaDate;
 import com.rnd.tms.data.converter.JodaDateToStringConverter;
-import com.rnd.tms.data.entity.Address;
 import com.rnd.tms.data.entity.Employee;
-import com.rnd.tms.data.entity.RawTiming;
+import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.TimingProfile;
-import com.rnd.tms.data.repository.RawTimingRepository;
-import com.rnd.tms.ui.editor.RawTimingEditor;
-import com.vaadin.annotations.Theme;
+import com.rnd.tms.data.repository.ProcessedTimingRepository;
+import com.rnd.tms.ui.editor.ProcessedTimingEditor;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.CellReference;
-import com.vaadin.ui.Grid.CellStyleGenerator;
-import com.vaadin.ui.Grid.HeaderCell;
-import com.vaadin.ui.Grid.HeaderRow;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.themes.ValoTheme;
 
-@SpringView(name = RawTimingView.VIEW_NAME)
-public class RawTimingView extends VerticalLayout implements View{
+@SpringView(name = ProcessedTimingView.VIEW_NAME)
+public class ProcessedTimingView extends HorizontalSplitPanel implements View{
 
-	public static final String VIEW_NAME = "raw_timing";
+	public static final String VIEW_NAME = "timings";
 
-	private final RawTimingRepository repo;
+	private final ProcessedTimingRepository repo;
 
-	private final RawTimingEditor editor;
+	private final ProcessedTimingEditor editor;
 
 	private final Grid grid;
 
@@ -50,7 +41,7 @@ public class RawTimingView extends VerticalLayout implements View{
 	private final Button addNewBtn;
 
 	@Autowired
-	public RawTimingView(RawTimingRepository repo, RawTimingEditor editor) {
+	public ProcessedTimingView(ProcessedTimingRepository repo, ProcessedTimingEditor editor) {
 		this.repo = repo;
 		this.editor = editor;
 		this.grid = new Grid();
@@ -62,13 +53,15 @@ public class RawTimingView extends VerticalLayout implements View{
 	void init() {
 		// build layout
 		HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-		VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
-		addComponent(mainLayout);
+		VerticalLayout leftLayout = new VerticalLayout(actions, grid);
+		VerticalLayout rightLayout = new VerticalLayout(editor);
+		setFirstComponent(leftLayout);
+		setSecondComponent(editor);
 
 		// Configure layouts and components
 		actions.setSpacing(true);
-		mainLayout.setMargin(true);
-		mainLayout.setSpacing(true);
+		leftLayout.setMargin(true);
+		leftLayout.setSpacing(true);
 
 		grid.setHeight(300, Unit.PIXELS);
 		grid.setWidth(100, Unit.PERCENTAGE);
@@ -80,41 +73,41 @@ public class RawTimingView extends VerticalLayout implements View{
 		// Hook logic to components
 
 		// Replace listing with filtered content when user changes filter
-		filter.addTextChangeListener(e -> listRawTimings(e.getText()));
+		filter.addTextChangeListener(e -> listProcessedTimings(e.getText()));
 
-		// Connect selected RawTiming to editor or hide if none is selected
+		// Connect selected ProcessedTiming to editor or hide if none is selected
 		grid.addSelectionListener(e -> {
 			if (e.getSelected().isEmpty()) {
 				editor.setVisible(false);
 			}
 			else {
-				editor.editRawTiming((RawTiming) e.getSelected().iterator().next());
+				editor.editProcessedTiming((ProcessedTiming) e.getSelected().iterator().next());
 			}
 		});
 
-		// Instantiate and edit new RawTiming the new button is clicked
-		RawTiming newRawTiming= new RawTiming();
-		newRawTiming.setEmployee(new Employee());
-		newRawTiming.setTimingProfile(new TimingProfile());
-		addNewBtn.addClickListener(e -> editor.editRawTiming(newRawTiming));
+		// Instantiate and edit new ProcessedTiming the new button is clicked
+		ProcessedTiming newProcessedTiming= new ProcessedTiming();
+		newProcessedTiming.setEmployee(new Employee());
+		newProcessedTiming.setTimingProfile(new TimingProfile());
+		addNewBtn.addClickListener(e -> editor.editProcessedTiming(newProcessedTiming));
 
 		// Listen changes made by the editor, refresh data from backend
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
-			listRawTimings(filter.getValue());
+			listProcessedTimings(filter.getValue());
 		});
 
 		// Initialize listing
-		listRawTimings(null);
+		listProcessedTimings(null);
 	}
 
-	// tag::listRawTimings[]
-	private void listRawTimings(String text) {
+	// tag::listProcessedTimings[]
+	private void listProcessedTimings(String text) {
 		
 		BeanItemContainer container = null;
 				
 		if (StringUtils.isEmpty(text)) {
-			container = new BeanItemContainer(RawTiming.class, repo.findAll());
+			container = new BeanItemContainer(ProcessedTiming.class, repo.findAll());
 		}
 		container.addNestedContainerProperty("employee.firstName");
 		container.addNestedContainerProperty("employee.LastName");
@@ -153,7 +146,7 @@ public class RawTimingView extends VerticalLayout implements View{
 		
 		//Indexed
 	}
-	// end::listRawTimings[]
+	// end::listProcessedTimings[]
 
 	@Override
 	public void enter(ViewChangeEvent event) {

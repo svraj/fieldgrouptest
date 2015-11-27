@@ -30,14 +30,14 @@ public class BreakDetail extends BaseEntity{
 	
 	@ManyToOne
 	@NotNull
-	private RawTiming rawTiming;
+	private ProcessedTiming processedTiming;
 	
-	public RawTiming getRawTiming() {
-		return rawTiming;
+	public ProcessedTiming getProcessedTiming() {
+		return processedTiming;
 	}
 
-	public void setRawTiming(RawTiming rawTiming) {
-		this.rawTiming = rawTiming;
+	public void setProcessedTiming(ProcessedTiming processedTiming) {
+		this.processedTiming = processedTiming;
 	}
 
 	public BreakDetail(BreakType breakType, DateTime breakStart,DateTime breakEnd) {

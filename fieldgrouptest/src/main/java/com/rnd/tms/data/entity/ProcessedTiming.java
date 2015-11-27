@@ -1,13 +1,19 @@
 package com.rnd.tms.data.entity;
 
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalDate;
@@ -18,12 +24,47 @@ import org.joda.time.LocalTime;
 @Entity
 public class ProcessedTiming extends BaseEntity{
 	
-	@OneToOne(cascade=CascadeType.ALL)
-	private RawTiming rawTiming;
 	
-	
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	private Employee employee;
+	
+	@ManyToOne
+	private TimingProfile timingProfile;
+	
+	public TimingProfile getTimingProfile() {
+		return timingProfile;
+	}
+	public void setTimingProfile(TimingProfile timingProfile) {
+		this.timingProfile = timingProfile;
+	}
+
+	@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+	private DateTime inDateTime;
+	
+	@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+	private DateTime outDateTime;
+	
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JoinColumn(name="raw_timing_id")
+	private List<BreakDetail> breakDetails;
+	public List<BreakDetail> getBreakDetails() {
+		return breakDetails;
+	}
+	public void setBreakDetails(List<BreakDetail> breakDetails) {
+		this.breakDetails = breakDetails;
+	}
+	public DateTime getInDateTime() {
+		return inDateTime;
+	}
+	public void setInDateTime(DateTime inDateTime) {
+		this.inDateTime = inDateTime;
+	}
+	public DateTime getOutDateTime() {
+		return outDateTime;
+	}
+	public void setOutDateTime(DateTime outDateTime) {
+		this.outDateTime = outDateTime;
+	}
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private UserDetail approvedBy;
@@ -55,19 +96,9 @@ public class ProcessedTiming extends BaseEntity{
 	
 	private String remarks;
 
-	public ProcessedTiming(RawTiming rawTiming) {
-		this.rawTiming=rawTiming;
-	}
 	
 	public ProcessedTiming(){}
 
-	public RawTiming getRawTiming() {
-		return rawTiming;
-	}
-
-	public void setRawTiming(RawTiming rawTiming) {
-		this.rawTiming = rawTiming;
-	}
 
 	public Employee getEmployee() {
 		return employee;

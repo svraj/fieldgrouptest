@@ -1,45 +1,33 @@
 package com.rnd.tms.ui.editor;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
 import com.rnd.tms.data.converter.JodaDateTimeToJavaDate;
-import com.rnd.tms.data.converter.JodaDateToStringConverter;
 import com.rnd.tms.data.entity.Employee;
-import com.rnd.tms.data.entity.RawTiming;
+import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.repository.EmployeeRepository;
-import com.rnd.tms.data.repository.RawTimingRepository;
+import com.rnd.tms.data.repository.ProcessedTimingRepository;
 import com.rnd.tms.data.repository.TimingProfileRepository;
 import com.rnd.tms.ui.TmsUiUtils;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.ViewScope;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -54,9 +42,9 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SpringComponent
 @ViewScope
-public class RawTimingEditor extends GridLayout {
+public class ProcessedTimingEditor extends GridLayout {
 
-	private final RawTimingRepository repository;
+	private final ProcessedTimingRepository repository;
 	@Autowired
 	private TimingProfileRepository timingProfileRepository;
 	@Autowired
@@ -65,11 +53,15 @@ public class RawTimingEditor extends GridLayout {
 	/**
 	 * The currently edited rawTiming
 	 */
-	private RawTiming rawTiming;
+	private ProcessedTiming rawTiming;
 
 	HorizontalLayout rawTimingLayout = new HorizontalLayout();
 	DateField inDateTime = new DateField("In Date Time");
 	DateField outDateTime = new DateField("Out Date Time");
+	
+	
+	
+	
 
 	HorizontalLayout timingProfileLayout = new HorizontalLayout();
 
@@ -92,12 +84,13 @@ public class RawTimingEditor extends GridLayout {
 	Button save = new Button("Save", FontAwesome.SAVE);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", FontAwesome.TRASH_O);
+	Button process = new Button("Process", FontAwesome.SAVE);
 
 	// CssLayout actions = new CssLayout(save, cancel, delete);
 
 	@Autowired
-	public RawTimingEditor(RawTimingRepository repository) {
-		super(2, 4);
+	public ProcessedTimingEditor(ProcessedTimingRepository repository) {
+		//super(2,8);
 		this.repository = repository;
 		setSpacing(true);
 		setSizeFull();
@@ -118,7 +111,7 @@ public class RawTimingEditor extends GridLayout {
 
 		buttonLayout.setSpacing(true);
 
-		buttonLayout.addComponents(save, cancel, delete);
+		buttonLayout.addComponents(save, cancel, delete,process);
 		addComponent(buttonLayout);
 		setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
 
@@ -142,10 +135,10 @@ public class RawTimingEditor extends GridLayout {
 	private void initComponents() {
 		prepareTimingProfileCombo();
 		prepareEmployeeCombo();
-		styleComponents();
+		//styleComponents();
 		registerListeners();
 		TmsUiUtils.setTextFieldNullRepresentation(this);
-
+		remarks.setEnabled(false);
 	}
 
 	private void registerListeners() {
@@ -156,6 +149,7 @@ public class RawTimingEditor extends GridLayout {
 
 	private void styleComponents() {
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		process.setStyleName(ValoTheme.BUTTON_FRIENDLY);
 		delete.setStyleName(ValoTheme.BUTTON_DANGER);
 	}
 
@@ -167,7 +161,7 @@ public class RawTimingEditor extends GridLayout {
 		void onChange();
 	}
 
-	public final void editRawTiming(RawTiming c) {
+	public final void editProcessedTiming(ProcessedTiming c) {
 		final boolean persisted = c.getId() != null;
 		if (persisted) {
 			// Find fresh entity for editing
@@ -178,11 +172,13 @@ public class RawTimingEditor extends GridLayout {
 		}
 		cancel.setVisible(persisted);
 
-		BeanFieldGroup<RawTiming> rawTimingBinder = new BeanFieldGroup<RawTiming>(
-				RawTiming.class);
+		BeanFieldGroup<ProcessedTiming> rawTimingBinder = new BeanFieldGroup<ProcessedTiming>(
+				ProcessedTiming.class);
 		rawTimingBinder.bindMemberFields(this);
 		rawTimingBinder.setItemDataSource(rawTiming);
 		rawTimingBinder.setBuffered(false);
+		remarks.setReadOnly(true);
+		companyName.setReadOnly(true);
 		setVisible(true);
 		save.focus();
 	}

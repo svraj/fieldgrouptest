@@ -36,7 +36,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = TimingProfileView.VIEW_NAME)
-@Theme("tms")
+@Theme("valo")
 public class TimingProfileView extends VerticalLayout implements View{
 
 	public static final String VIEW_NAME = "timing_profile";

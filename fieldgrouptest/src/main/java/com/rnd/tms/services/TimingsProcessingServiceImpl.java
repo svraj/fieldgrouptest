@@ -9,13 +9,12 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.rnd.tms.business.dto.RawTimingProcessResult;
+import com.rnd.tms.business.dto.ProcessedTimingProcessResult;
 import com.rnd.tms.business.dto.TimingsProcessDTO;
 import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 import com.rnd.tms.data.entity.BreakDetail;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.ProcessedTiming;
-import com.rnd.tms.data.entity.RawTiming;
 import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.enums.BreakType;
 import com.rnd.tms.data.repository.BreakDetailRepository;
@@ -32,91 +31,88 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService{
 	@Autowired
 	private BreakDetailRepository breakDetailRepository;
 
-	public TimingsProcessDTO processRawTiming(RawTiming rawTiming){
+	public TimingsProcessDTO processProcessedTiming(ProcessedTiming processedTiming){
 		TimingsProcessDTO timingsProcessDTO = new TimingsProcessDTO();
-		List<RawTimingProcessResult> rawTimingProcessResults =  null;
-		RawTimingProcessResult rawTimingProcessResult = null;
+		List<ProcessedTimingProcessResult> processedTimingProcessResults =  null;
+		ProcessedTimingProcessResult processedTimingProcessResult = null;
 		
-		ProcessedTiming processedTiming =  new ProcessedTiming(rawTiming);
 		
-		if(rawTiming.getInDateTime()!=null){
-			processedTiming.setInDate(rawTiming.getInDateTime().toLocalDate());
-			processedTiming.setInTime(rawTiming.getInDateTime().toLocalTime());
+		if(processedTiming.getInDateTime()!=null){
+			processedTiming.setInDate(processedTiming.getInDateTime().toLocalDate());
+			processedTiming.setInTime(processedTiming.getInDateTime().toLocalTime());
 		}
-		if(rawTiming.getOutDateTime()!=null){
-			processedTiming.setOutDate(rawTiming.getOutDateTime().toLocalDate());
-			processedTiming.setOutTime(rawTiming.getOutDateTime().toLocalTime());
+		if(processedTiming.getOutDateTime()!=null){
+			processedTiming.setOutDate(processedTiming.getOutDateTime().toLocalDate());
+			processedTiming.setOutTime(processedTiming.getOutDateTime().toLocalTime());
 		}
 		
 		try {
-			setBreakCalculations(rawTiming,processedTiming);
-			setHourCalculations(rawTiming,processedTiming);
-			setIdealTimeOut(rawTiming, processedTiming);
-			setOvertimeCalculations(rawTiming,processedTiming);
-			setDayBalance(rawTiming,processedTiming);
-			/*timingsProcessDTO.setProcessStatus(TimingRecordProcessStatus.SUCCESS);
-			rawTimingProcessResult.setProcessStatus(TimingRecordProcessStatus.SUCCESS);*/
+			setBreakCalculations(processedTiming);
+			setHourCalculations(processedTiming);
+			setIdealTimeOut(processedTiming);
+			setOvertimeCalculations(processedTiming);
+			setDayBalance(processedTiming);
 			processedTimingRepository.save(processedTiming);
 		} catch (TmsBusinessException e) {
-			rawTimingProcessResult = getProcessResultSkeltonForRawTiming(rawTiming);
+			processedTimingProcessResult = getProcessResultSkeltonForProcessedTiming(processedTiming);
 			timingsProcessDTO.setProcessStatus(TimingRecordProcessStatus.FAILED);
-			rawTimingProcessResult.setProcessStatus(TimingRecordProcessStatus.FAILED);
+			processedTimingProcessResult.setProcessStatus(TimingRecordProcessStatus.FAILED);
 			//	TODO Set proper message below
-			rawTimingProcessResult.setRemarks(e.getMessage());
+			processedTimingProcessResult.setRemarks(e.getMessage());
 			e.printStackTrace();
-			rawTimingProcessResults =  new ArrayList<RawTimingProcessResult>();
-			rawTimingProcessResults.add(rawTimingProcessResult);
+			processedTimingProcessResults =  new ArrayList<ProcessedTimingProcessResult>();
+			processedTimingProcessResults.add(processedTimingProcessResult);
 		}catch(Exception e){
-			rawTimingProcessResult = getProcessResultSkeltonForRawTiming(rawTiming);
+			processedTimingProcessResult = getProcessResultSkeltonForProcessedTiming(processedTiming);
 			timingsProcessDTO.setProcessStatus(TimingRecordProcessStatus.FAILED);
-			rawTimingProcessResult.setProcessStatus(TimingRecordProcessStatus.FAILED);
-			rawTimingProcessResult.setRemarks(e.getMessage());
+			processedTimingProcessResult.setProcessStatus(TimingRecordProcessStatus.FAILED);
+			processedTimingProcessResult.setRemarks(e.getMessage());
 			e.printStackTrace();
-			rawTimingProcessResults =  new ArrayList<RawTimingProcessResult>();
-			rawTimingProcessResults.add(rawTimingProcessResult);
+			processedTimingProcessResults =  new ArrayList<ProcessedTimingProcessResult>();
+			processedTimingProcessResults.add(processedTimingProcessResult);
 		}
 		
 		
 		
-		timingsProcessDTO.setRawTimingProcessResults(rawTimingProcessResults);
+		timingsProcessDTO.setProcessedTimingProcessResults(processedTimingProcessResults);
 		return timingsProcessDTO;
 	}
 	
-	private void setDayBalance(RawTiming rawTiming,ProcessedTiming processedTiming) throws TmsBusinessException {
+	private void setDayBalance(ProcessedTiming processedTiming) throws TmsBusinessException {
 		
-		if(rawTiming.getTimingProfile()==null){
+		if(processedTiming.getTimingProfile()==null){
 			throw new TmsBusinessException("TimingProfile must not be null");
 		}
 		
-		if(rawTiming.getTimingProfile().getDailyWorkHours()==null){
+		if(processedTiming.getTimingProfile().getDailyWorkHours()==null){
 			throw new TmsBusinessException("DailyWorkingHours in TimingProfile not set");
 		}
 		
 		if(processedTiming.getTotalWorkingHours()!=null){
-			Duration dayBalance = processedTiming.getTotalWorkingHours().minus(rawTiming.getTimingProfile().getDailyWorkHours());
+			Duration dayBalance = processedTiming.getTotalWorkingHours().minus(processedTiming.getTimingProfile().getDailyWorkHours());
 			processedTiming.setDayBalance(dayBalance);
 		}
 		
 	}
 
-	private RawTimingProcessResult getProcessResultSkeltonForRawTiming(RawTiming rawTiming) {
-		RawTimingProcessResult rawTimingProcessResult = new RawTimingProcessResult();
-		rawTimingProcessResult.setRawTimingId(rawTiming.getId());
-		rawTimingProcessResult.setEmployeeId(rawTiming.getEmployee().getId());
-		rawTimingProcessResult.setDateOfWork(rawTiming.getInDateTime());
-		if(rawTiming.getTimingProfile()!=null){
-			rawTimingProcessResult.setTimingProfileId(rawTiming.getTimingProfile().getId());
+	private ProcessedTimingProcessResult getProcessResultSkeltonForProcessedTiming(ProcessedTiming processedTiming) {
+		ProcessedTimingProcessResult processedTimingProcessResult = new ProcessedTimingProcessResult();
+		processedTimingProcessResult.setProcessedTimingId(processedTiming.getId());
+		processedTimingProcessResult.setEmployeeId(processedTiming.getEmployee().getId());
+		processedTimingProcessResult.setDateOfWork(processedTiming.getInDateTime());
+		if(processedTiming.getTimingProfile()!=null){
+			processedTimingProcessResult.setTimingProfileId(processedTiming.getTimingProfile().getId());
 		}
-		return rawTimingProcessResult;
+		return processedTimingProcessResult;
 	}
 
-	private void setOvertimeCalculations(RawTiming rawTiming,ProcessedTiming processedTiming) throws TmsBusinessException {
-		if(rawTiming.getTimingProfile()==null){
+	private void setOvertimeCalculations(ProcessedTiming processedTiming) throws TmsBusinessException {
+		if(processedTiming.getTimingProfile()==null){
 			throw new TmsBusinessException("TimingProfile must not be null");
 		}
 		Duration totalOT= Duration.ZERO;
 		
-		if(rawTiming.getTimingProfile().getOvertimeAllowed()!=null && rawTiming.getTimingProfile().getOvertimeAllowed()){
+		if(processedTiming.getTimingProfile().getOvertimeAllowed()!=null && processedTiming.getTimingProfile().getOvertimeAllowed()){
 			// TODO Introduce OT calculations
 			//totalOT = calculateOT();
 		}
@@ -124,8 +120,8 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService{
 		
 	}
 	
-	private void setIdealTimeOut(RawTiming rawTiming,ProcessedTiming processedTiming) throws TmsBusinessException {
-		TimingProfile timingProfile = rawTiming.getTimingProfile();
+	private void setIdealTimeOut(ProcessedTiming processedTiming) throws TmsBusinessException {
+		TimingProfile timingProfile = processedTiming.getTimingProfile();
 		if(timingProfile==null){
 			throw new TmsBusinessException("TimingProfile must not be null");
 		}
@@ -141,7 +137,7 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService{
 			throw new TmsBusinessException("DailyWorkingHours in TimingProfile not set");
 		}
 		
-		if(rawTiming.getInDateTime()!=null){
+		if(processedTiming.getInDateTime()!=null){
 			DateTime idealTimeOut= null;
 			
 			Duration totalDurationToBeInWork = idealWorkingHours.plus(minimumBreakDuration);
@@ -149,26 +145,26 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService{
 				Duration overflownBreakHours = processedTiming.getTotalBreakDuration().minus(timingProfile.getMinBreakDuration());
 				totalDurationToBeInWork= totalDurationToBeInWork.plus(overflownBreakHours);
 			}
-			idealTimeOut = rawTiming.getInDateTime().plus(totalDurationToBeInWork);
+			idealTimeOut = processedTiming.getInDateTime().plus(totalDurationToBeInWork);
 			
 			processedTiming.setIdealTimeOut(idealTimeOut);
 		}
 	}
 
-	private void setHourCalculations(RawTiming rawTiming,ProcessedTiming processedTiming) {
-		if(rawTiming.getInDateTime()!=null && rawTiming.getOutDateTime()!=null && processedTiming.getEffectiveLunchDuration()!=null){
+	private void setHourCalculations(ProcessedTiming processedTiming) {
+		if(processedTiming.getInDateTime()!=null && processedTiming.getOutDateTime()!=null && processedTiming.getEffectiveLunchDuration()!=null){
 			Duration totalWorkHours = Duration.ZERO;
-			totalWorkHours = new Duration(rawTiming.getInDateTime(),rawTiming.getOutDateTime());
+			totalWorkHours = new Duration(processedTiming.getInDateTime(),processedTiming.getOutDateTime());
 			totalWorkHours = totalWorkHours.minus(processedTiming.getTotalBreakDuration());
 			processedTiming.setTotalWorkingHours(totalWorkHours);
 		}
 	}
 
-	private void setBreakCalculations(RawTiming rawTiming,ProcessedTiming processedTiming) throws TmsBusinessException{
-		if(rawTiming.getTimingProfile()==null){
+	private void setBreakCalculations(ProcessedTiming processedTiming) throws TmsBusinessException{
+		if(processedTiming.getTimingProfile()==null){
 			throw new TmsBusinessException("TimingProfile must not be null");
 		}
-		List<BreakDetail> breakDetails = rawTiming.getBreakDetails();
+		List<BreakDetail> breakDetails = processedTiming.getBreakDetails();
 		Duration lunchBreakDuration= Duration.ZERO;
 		Duration otherBreaksDuration = Duration.ZERO;
 		Duration totalBreakDuration = Duration.ZERO;
@@ -177,7 +173,7 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService{
 				if(BreakType.LUNCH == breakDetail.getBreakType()){
 					processedTiming.setLunchStart(breakDetail.getBreakStart());
 					processedTiming.setLunchEnd(breakDetail.getBreakEnd());
-					breakDetail = calculateAndUpdateBreakDetail(breakDetail, rawTiming.getTimingProfile());
+					breakDetail = calculateAndUpdateBreakDetail(breakDetail, processedTiming.getTimingProfile());
 					processedTiming.setActualLunchDuration(breakDetail.getActualBreakDuration()); 
 					lunchBreakDuration = breakDetail.getEffectiveBreakDuration();
 					processedTiming.setEffectiveLunchDuration(lunchBreakDuration);
@@ -214,13 +210,13 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService{
 	}
 
 	
-	public TimingsProcessDTO processRawTimingsForEmployee(Employee employee, DateTime startDate, DateTime endDate){
+	public TimingsProcessDTO processProcessedTimingsForEmployee(Employee employee, DateTime startDate, DateTime endDate){
 		//TODO
 		TimingsProcessDTO timingsProcessDTO = null;
 		return timingsProcessDTO;
 	}
 	
-	public TimingsProcessDTO processRawTimings(DateTime startDate, DateTime endDate){
+	public TimingsProcessDTO processProcessedTimings(DateTime startDate, DateTime endDate){
 		//TODO
 		TimingsProcessDTO timingsProcessDTO = null;
 		return timingsProcessDTO;

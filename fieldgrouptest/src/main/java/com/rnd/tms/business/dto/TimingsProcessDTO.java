@@ -7,7 +7,7 @@ import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 public class TimingsProcessDTO {
 
 	private TimingRecordProcessStatus processStatus;
-	private List<RawTimingProcessResult> rawTimingProcessResults;
+	private List<ProcessedTimingProcessResult> processedTimingProcessResults;
 	
 	public TimingRecordProcessStatus getProcessStatus() {
 		return processStatus;
@@ -15,11 +15,11 @@ public class TimingsProcessDTO {
 	public void setProcessStatus(TimingRecordProcessStatus processStatus) {
 		this.processStatus = processStatus;
 	}
-	public List<RawTimingProcessResult> getRawTimingProcessResults() {
-		return rawTimingProcessResults;
+	public List<ProcessedTimingProcessResult> getProcessedTimingProcessResults() {
+		return processedTimingProcessResults;
 	}
-	public void setRawTimingProcessResults(
-			List<RawTimingProcessResult> rawTimingProcessResults) {
-		this.rawTimingProcessResults = rawTimingProcessResults;
+	public void setProcessedTimingProcessResults(
+			List<ProcessedTimingProcessResult> processedTimingProcessResults) {
+		this.processedTimingProcessResults = processedTimingProcessResults;
 	}
 }

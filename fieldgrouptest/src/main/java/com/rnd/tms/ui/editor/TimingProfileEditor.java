@@ -51,7 +51,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SpringComponent
 @ViewScope
-@Theme("tms")
+@Theme("valo")
 public class TimingProfileEditor extends GridLayout {
 
 	private final TimingProfileRepository repository;

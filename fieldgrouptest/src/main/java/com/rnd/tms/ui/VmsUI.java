@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.rnd.tms.ui.components.Greeter;
 import com.rnd.tms.ui.views.ClientView;
 import com.rnd.tms.ui.views.EmployeeView;
-import com.rnd.tms.ui.views.RawTimingView;
+import com.rnd.tms.ui.views.ProcessedTimingView;
 import com.rnd.tms.ui.views.TimingProfileView;
 import com.rnd.tms.ui.views.ViewScopedView;
 import com.vaadin.annotations.Theme;
@@ -64,8 +64,9 @@ public class VmsUI extends UI {
         navigationBar.addComponent(createNavigationButton("Zones", ViewScopedView.VIEW_NAME));
         navigationBar.addComponent(createNavigationButton("Es ",EmployeeView.VIEW_NAME));
         navigationBar.addComponent(createNavigationButton("Clients ",ClientView.VIEW_NAME));
-        navigationBar.addComponent(createNavigationButton("Raw Timing",RawTimingView.VIEW_NAME));
+        //navigationBar.addComponent(createNavigationButton("Raw Timing",RawTimingView.VIEW_NAME));
         navigationBar.addComponent(createNavigationButton("Timing Profiles",TimingProfileView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Processed Timings",ProcessedTimingView.VIEW_NAME));
         root.addComponent(navigationBar);
     }
     

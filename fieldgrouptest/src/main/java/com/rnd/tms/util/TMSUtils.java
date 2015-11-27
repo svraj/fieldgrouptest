@@ -5,7 +5,7 @@ import java.util.List;
 import org.joda.time.Duration;
 
 import com.rnd.tms.data.entity.BreakDetail;
-import com.rnd.tms.data.entity.RawTiming;
+import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.TimingProfile;
 
 public class TMSUtils {
@@ -38,14 +38,14 @@ public class TMSUtils {
 		return effectiveBreakDuration;
 	}
 
-	public static Duration calculateTotalBreakHours(RawTiming rawTiming, TimingProfile timingProfile,
+	public static Duration calculateTotalBreakHours(ProcessedTiming processedTiming, TimingProfile timingProfile,
 			boolean ignoreTimingProfile) {
 
 		Duration totalBreakHours = null;
 		List<BreakDetail> breaksTaken = null;
 
-		if (rawTiming != null) {
-			breaksTaken = rawTiming.getBreakDetails();
+		if (processedTiming != null) {
+			breaksTaken = processedTiming.getBreakDetails();
 			if (ignoreTimingProfile) {
 				if (breaksTaken != null) {
 					totalBreakHours = calculateTotalBreakHours(breaksTaken);

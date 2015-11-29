@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rnd.tms.ui.components.Greeter;
 import com.rnd.tms.ui.views.ClientView;
+import com.rnd.tms.ui.views.ClientViritinView;
 import com.rnd.tms.ui.views.EmployeeView;
+import com.rnd.tms.ui.views.EmployeeViritinView;
 import com.rnd.tms.ui.views.ProcessedTimingView;
 import com.rnd.tms.ui.views.TimingProfileView;
+import com.rnd.tms.ui.views.TimingProfileViritinView;
 import com.rnd.tms.ui.views.ViewScopedView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
@@ -62,10 +65,12 @@ public class VmsUI extends UI {
     	final CssLayout navigationBar = new CssLayout();
         navigationBar.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
         navigationBar.addComponent(createNavigationButton("Zones", ViewScopedView.VIEW_NAME));
-        navigationBar.addComponent(createNavigationButton("Es ",EmployeeView.VIEW_NAME));
-        navigationBar.addComponent(createNavigationButton("Clients ",ClientView.VIEW_NAME));
-        //navigationBar.addComponent(createNavigationButton("Raw Timing",RawTimingView.VIEW_NAME));
-        navigationBar.addComponent(createNavigationButton("Timing Profiles",TimingProfileView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Employee ",EmployeeView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Client ",ClientView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Clients ",ClientViritinView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Employees Viritin",EmployeeViritinView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Timing Profile",TimingProfileView.VIEW_NAME));
+        navigationBar.addComponent(createNavigationButton("Timing Profiles",TimingProfileViritinView.VIEW_NAME));
         navigationBar.addComponent(createNavigationButton("Processed Timings",ProcessedTimingView.VIEW_NAME));
         root.addComponent(navigationBar);
     }

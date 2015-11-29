@@ -1,6 +1,7 @@
 package com.rnd.tms.data.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,6 +16,10 @@ public class Employee extends BaseEntity implements Serializable{
 	private String firstName;
 	private String lastName;
 	private String employeeCode;
+	private Date dateOfBirth;
+	private Boolean foreigner;
+	private String email;
+	private String phoneNumber;
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Address address;
@@ -54,6 +59,38 @@ public class Employee extends BaseEntity implements Serializable{
 
 	public void setAddress(Address address) {
 		this.address = address;
+	}
+
+	public Boolean getForeigner() {
+		return foreigner;
+	}
+
+	public void setForeigner(Boolean foreigner) {
+		this.foreigner = foreigner;
+	}
+
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 	
 }

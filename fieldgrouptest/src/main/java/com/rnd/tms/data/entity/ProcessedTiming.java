@@ -72,18 +72,7 @@ public class ProcessedTiming extends BaseEntity{
 	@OneToOne(cascade=CascadeType.ALL)
 	private UserDetail processedBy;
 	
-	private LocalDate inDate;
-	private LocalDate outDate;
-	
-	private LocalTime inTime;
-	private LocalTime outTime;
-	
-	private DateTime lunchStart;
-	private DateTime lunchEnd;
-	
-	private Duration actualLunchDuration;
-	private Duration effectiveLunchDuration;
-	
+	private Duration mainBreakDuration;
 	private Duration otherBreaksDuration;
 	private Duration totalBreakDuration;
 	
@@ -124,69 +113,6 @@ public class ProcessedTiming extends BaseEntity{
 		this.processedBy = processedBy;
 	}
 
-	public LocalDate getInDate() {
-		return inDate;
-	}
-
-	public void setInDate(LocalDate inDate) {
-		this.inDate = inDate;
-	}
-
-	public LocalDate getOutDate() {
-		return outDate;
-	}
-
-	public void setOutDate(LocalDate outDate) {
-		this.outDate = outDate;
-	}
-
-	public LocalTime getInTime() {
-		return inTime;
-	}
-
-	public void setInTime(LocalTime inTime) {
-		this.inTime = inTime;
-	}
-
-	public LocalTime getOutTime() {
-		return outTime;
-	}
-
-	public void setOutTime(LocalTime outTime) {
-		this.outTime = outTime;
-	}
-
-	public DateTime getLunchStart() {
-		return lunchStart;
-	}
-
-	public void setLunchStart(DateTime lunchStart) {
-		this.lunchStart = lunchStart;
-	}
-
-	public DateTime getLunchEnd() {
-		return lunchEnd;
-	}
-
-	public void setLunchEnd(DateTime lunchEnd) {
-		this.lunchEnd = lunchEnd;
-	}
-
-	public Duration getActualLunchDuration() {
-		return actualLunchDuration;
-	}
-
-	public void setActualLunchDuration(Duration actualLunchDuration) {
-		this.actualLunchDuration = actualLunchDuration;
-	}
-
-	public Duration getEffectiveLunchDuration() {
-		return effectiveLunchDuration;
-	}
-
-	public void setEffectiveLunchDuration(Duration effectiveLunchDuration) {
-		this.effectiveLunchDuration = effectiveLunchDuration;
-	}
 
 	public Duration getOtherBreaksDuration() {
 		return otherBreaksDuration;
@@ -242,6 +168,12 @@ public class ProcessedTiming extends BaseEntity{
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+	public Duration getMainBreakDuration() {
+		return mainBreakDuration;
+	}
+	public void setMainBreakDuration(Duration mainBreakDuration) {
+		this.mainBreakDuration = mainBreakDuration;
 	}
 	
 	

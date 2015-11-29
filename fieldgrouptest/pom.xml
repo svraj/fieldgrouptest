@@ -69,6 +69,18 @@
 			<artifactId>timefield</artifactId>
 			<version>0.9</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>org.vaadin</groupId>
+            <artifactId>viritin</artifactId>
+            <version>1.37</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.vaadin.teemu</groupId>
+            <artifactId>switch</artifactId>
+            <version>2.0.2</version>
+        </dependency>
 
 	</dependencies>
 
@@ -90,6 +102,20 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			 <plugin>
+                <groupId>com.vaadin.wscdn</groupId>
+                <artifactId>wscdn-maven-plugin</artifactId>
+                <version>0.0.1</version>
+                  <executions>
+                      <execution>
+                          <phase>generate-sources</phase>
+                          <goals>
+                              <goal>generate</goal>
+                          </goals>
+                      </execution>
+                  </executions>
+            </plugin>
 			
 			<plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -116,10 +142,65 @@
 	</build>
 
 	<repositories>
+	 <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>http://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        
 		<repository>
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
 		</repository>
+		
+		 <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        
 	</repositories>
+	
+	<pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>http://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

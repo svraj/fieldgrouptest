@@ -41,7 +41,7 @@ public class ClientEditor extends GridLayout {
 	private final ClientRepository repository;
 
 	/**
-	 * The currently edited client
+	 * The currently edited employee
 	 */
 	private Client client;
 

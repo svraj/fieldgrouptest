@@ -103,7 +103,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			
-			 <plugin>
+			 <!-- <plugin>
                 <groupId>com.vaadin.wscdn</groupId>
                 <artifactId>wscdn-maven-plugin</artifactId>
                 <version>0.0.1</version>
@@ -115,7 +115,7 @@
                           </goals>
                       </execution>
                   </executions>
-            </plugin>
+            </plugin> -->
 			
 			<plugin>
                 <groupId>org.codehaus.mojo</groupId>

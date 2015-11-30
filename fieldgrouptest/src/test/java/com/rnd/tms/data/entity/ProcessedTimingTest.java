@@ -25,8 +25,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.rnd.tms.FieldGroupTestApplication;
-import com.rnd.tms.data.enums.BreakType;
-import com.rnd.tms.data.repository.BreakDetailRepository;
+import com.rnd.tms.data.entity.BreakDetail.BreakType;
 import com.rnd.tms.data.repository.ClientRepository;
 import com.rnd.tms.data.repository.EmployeeRepository;
 import com.rnd.tms.data.repository.ProcessedTimingRepository;
@@ -43,10 +42,10 @@ public class ProcessedTimingTest {
 	private EmployeeRepository employeeRepository;
 	
 	@Autowired
-	private ProcessedTimingRepository rawTimingRepository;
+	private ProcessedTimingRepository processedTimingRepository;
 	
-	@Autowired
-	private BreakDetailRepository breakDetailRepository;
+	/*@Autowired
+	private BreakDetailRepository breakDetailRepository;*/
 	
 	@Autowired
 	private TimingProfileRepository timingProfileRepository;
@@ -58,41 +57,47 @@ public class ProcessedTimingTest {
 	@Test
 	//@Transactional
 	public void testCreateProcessedTiming(){
-		ProcessedTiming rawTiming = new ProcessedTiming();
+		ProcessedTiming processedTiming = new ProcessedTiming();
 		Employee employee = new Employee("John","Loden");
-		rawTiming.setEmployee(employee);
+		processedTiming.setEmployee(employee);
 		employee=employeeRepository.save(employee);
 		
 		DateTime startDateTime = new DateTime(2015,11,17,8,0,0);
-		rawTiming.setInDateTime(startDateTime);
-		rawTiming.setOutDateTime(startDateTime.plusHours(9));
+		processedTiming.setInDateTime(startDateTime);
+		processedTiming.setOutDateTime(startDateTime.plusHours(9));
+		
+		Client client = new Client("ClientCreatedForDummyTimingProfile");
+		client = clientRepository.save(client);
+		TimingProfile timingProfile = TMSTestUtil.getDummyTimingProfile(client);
+		timingProfile = timingProfileRepository.save(timingProfile);
+		processedTiming.setTimingProfile(timingProfile);
+		processedTiming.setRecordCreatedDate(new Date());
+		processedTiming = processedTimingRepository.save(processedTiming);
+		assertNotNull(processedTiming.getId());
 		
 		List<BreakDetail> breakDetails = new ArrayList<BreakDetail>();
 		
 		DateTime lunchBreakStart = startDateTime.plusHours(3);
 		DateTime lunchBreakEnd = lunchBreakStart.plusMinutes(30);
 		BreakDetail lunchBreakDetail = new BreakDetail(BreakType.TEA,lunchBreakStart,lunchBreakEnd);
-		lunchBreakDetail.setProcessedTiming(rawTiming);
-		
+		//lunchBreakDetail.setProcessedTiming(processedTiming);
+		//lunchBreakDetail = breakDetailRepository.save(lunchBreakDetail);
 		breakDetails.add(lunchBreakDetail);
 		
 		DateTime teaBreakStart = startDateTime.plusHours(5);
 		DateTime teaBreakEnd = teaBreakStart.plusMinutes(10).plusHours(1);
 		BreakDetail teaBreakDetail = new BreakDetail(BreakType.TEA,teaBreakStart,teaBreakEnd);
-		teaBreakDetail.setProcessedTiming(rawTiming);
+		//teaBreakDetail.setProcessedTiming(processedTiming);
+		//teaBreakDetail = breakDetailRepository.save(teaBreakDetail);
 		breakDetails.add(teaBreakDetail);
-		rawTiming.setBreakDetails(breakDetails);
 		
-		rawTiming.setRecordCreatedDate(new Date());
-		Client client = new Client("ClientCreatedForDummyTimingProfile");
-		client = clientRepository.save(client);
-		TimingProfile timingProfile = TMSTestUtil.getDummyTimingProfile(client);
-		timingProfile = timingProfileRepository.save(timingProfile);
-		rawTiming.setTimingProfile(timingProfile);
-		//rawTiming.setRecordModifiedDate(new Date());
+		processedTiming.setBreakDetails(breakDetails);
+		processedTiming.setRecordModifiedDate(new Date());
+		processedTiming = processedTimingRepository.save(processedTiming);
 		
-		ProcessedTiming savedProcessedTiming = rawTimingRepository.save(rawTiming);
-		assertNotNull(savedProcessedTiming.getId());
+		
+		//assertNotNull(processedTiming.getBreakDetails().get(0).getId());
+		
 		
 	}
 	
@@ -101,7 +106,7 @@ public class ProcessedTimingTest {
 	@Transactional
 	public void testBreakTime(){
 		ProcessedTiming rawTiming = TMSTestUtil.createProcessedTimingWithBreaks();
-		rawTiming = rawTimingRepository.save(rawTiming);
+		rawTiming = processedTimingRepository.save(rawTiming);
 		BreakDetail breakDetail =  rawTiming.getBreakDetails().get(0);
 		Duration lunchBreakDuration = breakDetail.getActualBreakDuration();
 		if(lunchBreakDuration==null){

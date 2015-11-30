@@ -64,8 +64,8 @@ public class TMSUtils {
 		if (breaksTaken != null) {
 			for (BreakDetail breakTaken : breaksTaken) {
 				totalBreakHours = new Duration(0);
-				if (breakTaken.getEffectiveBreakDuration() != null) {
-					totalBreakHours = totalBreakHours.plus(breakTaken.getEffectiveBreakDuration());
+				if (breakTaken.getEffective() != null) {
+					totalBreakHours = totalBreakHours.plus(breakTaken.getEffective());
 				}
 			}
 		}

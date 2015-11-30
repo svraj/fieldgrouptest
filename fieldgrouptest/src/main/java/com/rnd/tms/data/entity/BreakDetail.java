@@ -1,43 +1,36 @@
 package com.rnd.tms.data.entity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import com.rnd.tms.data.enums.BreakType;
-
 @SuppressWarnings("serial")
-@Entity
-public class BreakDetail extends BaseEntity{
+@Embeddable
+public class BreakDetail{
+	
+	public enum BreakType {
+		BREAKFAST,LUNCH,TEA,DINNER,CASUAL,OFFICIAL,OTHER;
+	}
 	
 	@Enumerated(EnumType.STRING)
 	private BreakType breakType;
 	
-	//@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
 	private DateTime breakStart;
-	//@Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
 	private DateTime breakEnd;
 	
-	private Duration actualBreakDuration;
-	private Duration effectiveBreakDuration;
-	
-	@ManyToOne
-	@NotNull
-	private ProcessedTiming processedTiming;
-	
-	public ProcessedTiming getProcessedTiming() {
-		return processedTiming;
+	private Duration actual;
+	private Duration effective;
+	private String remarks;
+
+	public String getRemarks() {
+		return remarks;
 	}
 
-	public void setProcessedTiming(ProcessedTiming processedTiming) {
-		this.processedTiming = processedTiming;
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 
 	public BreakDetail(BreakType breakType, DateTime breakStart,DateTime breakEnd) {
@@ -45,8 +38,6 @@ public class BreakDetail extends BaseEntity{
 		this.breakType = breakType;
 		this.breakStart = breakStart;
 		this.breakEnd = breakEnd;
-		//this.actualBreakDuration = actualBreakDuration;
-		//this.effectiveBreakDuration = effectiveBreakDuration;
 	}
 	
 	public BreakDetail(){
@@ -71,19 +62,19 @@ public class BreakDetail extends BaseEntity{
 	public void setBreakEnd(DateTime breakEnd) {
 		this.breakEnd = breakEnd;
 	}
-	public Duration getActualBreakDuration() {
-		return actualBreakDuration;
+	public Duration getActual() {
+		return actual;
 	}
-	public void setActualBreakDuration(Duration actualBreakDuration) {
-		this.actualBreakDuration = actualBreakDuration;
-	}
-
-	public Duration getEffectiveBreakDuration() {
-		return effectiveBreakDuration;
+	public void setActual(Duration actual) {
+		this.actual = actual;
 	}
 
-	public void setEffectiveBreakDuration(Duration effectiveBreakDuration) {
-		this.effectiveBreakDuration = effectiveBreakDuration;
+	public Duration getEffective() {
+		return effective;
+	}
+
+	public void setEffective(Duration effective) {
+		this.effective = effective;
 	}
 
 }

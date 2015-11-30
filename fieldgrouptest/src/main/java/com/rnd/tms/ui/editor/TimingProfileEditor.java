@@ -83,7 +83,7 @@ public class TimingProfileEditor extends GridLayout {
 	
 	
 	HorizontalLayout clientLayout = new HorizontalLayout();
-	//@PropertyId("client.companyName")
+	//@PropertyId("employee.companyName")
 	ComboBox client = new ComboBox("Client");
 	
 	HorizontalLayout buttonLayout = new HorizontalLayout();

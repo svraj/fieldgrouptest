@@ -1,4 +1,4 @@
-package com.rnd.tms.ui.views;
+package com.rnd.tms.ui.viritin.views;
 
 import javax.annotation.PostConstruct;
 
@@ -72,8 +72,8 @@ public class EmployeeViritinView extends VerticalLayout implements View{
                 // entity fetching strategy
                 (firstRow, asc, sortProperty) -> employeeRepository.findAllBy(
                         new PageRequest(
-                                firstRow / PAGESIZE, 
-                                PAGESIZE,
+                                firstRow / PAGE_SIZE, 
+                                PAGE_SIZE,
                                 asc ? Sort.Direction.ASC : Sort.Direction.DESC,
                                 // fall back to id as "natural order"
                                 sortProperty == null ? "id" : sortProperty
@@ -81,7 +81,7 @@ public class EmployeeViritinView extends VerticalLayout implements View{
                 ),
                 // count fetching strategy
                 () -> (int) employeeRepository.count(),
-                PAGESIZE
+                PAGE_SIZE
         ));*/
         adjustActionButtonState();
 

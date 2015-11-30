@@ -1,4 +1,4 @@
-package com.rnd.tms.ui.views;
+package com.rnd.tms.ui.viritin.views;
 
 import javax.annotation.PostConstruct;
 
@@ -9,48 +9,48 @@ import org.vaadin.viritin.fields.MTable;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import com.rnd.tms.data.entity.Client;
+import com.rnd.tms.data.entity.TimingProfile;
 import com.rnd.tms.data.repository.ClientRepository;
-import com.rnd.tms.ui.editor.ClientForm;
+import com.rnd.tms.data.repository.TimingProfileRepository;
+import com.rnd.tms.ui.editor.TimingProfileForm;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.VerticalLayout;
 
-@SpringView(name=ClientViritinView.VIEW_NAME)
-public class ClientViritinView extends VerticalLayout implements View{
-
-	public static final String VIEW_NAME="clients";
+@SpringView(name = TimingProfileViritinView.VIEW_NAME)
+public class TimingProfileViritinView extends VerticalLayout implements View{
+	
+	public static final String VIEW_NAME = "timing_profiles";
 	
 	@Autowired
-	private ClientRepository clientRepository;
+	private TimingProfileRepository timingProfileRepository;
 	
-	private MTable<Client> list = new MTable<>(Client.class)
-			.withProperties("id","companyName","contactNumber")
-			 .withColumnHeaders("ID", "Company name", "Contact number")
-	            .setSortableProperties("companyName","contactNumber")
-	            .withFullWidth()
-	            //.setHeight(50, Unit.PERCENTAGE);
-	            ;
+	@Autowired
+	private TimingProfileForm timingProfileForm ;
+	
+	private MTable<TimingProfile> list = new MTable<>(TimingProfile.class)
+            .withProperties("id", "profileName", "client.companyName")
+            .withColumnHeaders("ID", "Profile Name", "Client name")
+            .setSortableProperties("profileName", "client.companyName")
+            .withFullWidth();
 	
 	private Button addNew = new MButton(FontAwesome.PLUS, this::add);
     private Button edit = new MButton(FontAwesome.PENCIL_SQUARE_O, this::edit);
     private Button delete = new ConfirmButton(FontAwesome.TRASH_O,
             "Are you sure you want to delete the entry?", this::remove);
-    
+
     @PostConstruct
     protected void init() {
-    	list.setHeight(25,Unit.PERCENTAGE);
+    	//list.getContainerDataSource().get
         addComponent(new MVerticalLayout(
                         new MHorizontalLayout(addNew, edit, delete),
                         list
-                )
-        		//.expand(list)
+                ).expand(list)
         );
-        
         listEntities();
         list.addMValueChangeListener(e -> adjustActionButtonState());
     }
@@ -65,7 +65,7 @@ public class ClientViritinView extends VerticalLayout implements View{
 
     private void listEntities() {
         // A dead simple in memory listing would be:
-         list.setBeans(clientRepository.findAll());
+         list.setBeans(timingProfileRepository.findAll());
 
         // Lazy binding with SortableLazyList: memory and query efficient 
         // connection from Vaadin Table to Spring Repository
@@ -75,25 +75,25 @@ public class ClientViritinView extends VerticalLayout implements View{
         
         /*list.setBeans(new SortableLazyList<>(
                 // entity fetching strategy
-                (firstRow, asc, sortProperty) -> clientRepository.findAllBy(
+                (firstRow, asc, sortProperty) -> timingProfileRepository.findAllBy(
                         new PageRequest(
-                                firstRow / PAGESIZE, 
-                                PAGESIZE,
+                                firstRow / PAGE_SIZE, 
+                                PAGE_SIZE,
                                 asc ? Sort.Direction.ASC : Sort.Direction.DESC,
                                 // fall back to id as "natural order"
                                 sortProperty == null ? "id" : sortProperty
                         )
                 ),
                 // count fetching strategy
-                () -> (int) clientRepository.count(),
-                PAGESIZE
+                () -> (int) timingProfileRepository.count(),
+                PAGE_SIZE
         ));*/
         adjustActionButtonState();
 
     }
 
     public void add(ClickEvent clickEvent) {
-        edit(new Client());
+        edit(new TimingProfile());
     }
 
     public void edit(ClickEvent e) {
@@ -101,27 +101,28 @@ public class ClientViritinView extends VerticalLayout implements View{
     }
 
     public void remove(ClickEvent e) {
-        clientRepository.delete(list.getValue());
+        timingProfileRepository.delete(list.getValue());
         list.setValue(null);
         listEntities();
     }
 
-    protected void edit(final Client client) {
-        ClientForm clientForm = new ClientForm(client);
-        clientForm.openInModalPopup();
-        //addComponent(clientForm);
-        //clientForm.setVisible(true);
-        clientForm.setSavedHandler(this::saveEntry);
-        clientForm.setResetHandler(this::resetEntry);
+    protected void edit(final TimingProfile timingProfile) {
+        //timingProfileForm = new TimingProfileForm(timingProfile,clientRepository);
+    	timingProfileForm.setTimingProfile(timingProfile);
+        timingProfileForm.openInModalPopup();
+        //addComponent(timingProfileForm);
+        //timingProfileForm.setVisible(true);
+        timingProfileForm.setSavedHandler(this::saveEntry);
+        timingProfileForm.setResetHandler(this::resetEntry);
     }
 
-    public void saveEntry(Client entry) {
-        clientRepository.save(entry);
+    public void saveEntry(TimingProfile entry) {
+        timingProfileRepository.save(entry);
         listEntities();
         closeWindow();
     }
 
-    public void resetEntry(com.rnd.tms.data.entity.Client entry) {
+    public void resetEntry(com.rnd.tms.data.entity.TimingProfile entry) {
         listEntities();
         closeWindow();
     }
@@ -135,6 +136,5 @@ public class ClientViritinView extends VerticalLayout implements View{
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
+
 }

@@ -9,11 +9,11 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rnd.tms.data.entity.BreakDetail;
+import com.rnd.tms.data.entity.BreakDetail.BreakType;
 import com.rnd.tms.data.entity.Client;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.TimingProfile;
-import com.rnd.tms.data.enums.BreakType;
 import com.rnd.tms.data.repository.ClientRepository;
 import com.rnd.tms.data.repository.TimingProfileRepository;
 
@@ -32,13 +32,13 @@ public class TMSTestUtil {
 		DateTime lunchBreakStart = startDateTime.plusHours(3);
 		DateTime lunchBreakEnd = lunchBreakStart.plusMinutes(30);
 		BreakDetail lunchBreakDetail = new BreakDetail(BreakType.LUNCH,lunchBreakStart,lunchBreakEnd);
-		lunchBreakDetail.setProcessedTiming(rawTiming);
+		//lunchBreakDetail.setProcessedTiming(rawTiming);
 		breakDetails.add(lunchBreakDetail);
 		
 		DateTime teaBreakStart = startDateTime.plusHours(5);
 		DateTime teaBreakEnd = teaBreakStart.plusMinutes(40);
 		BreakDetail teaBreakDetail = new BreakDetail(BreakType.LUNCH,teaBreakStart,teaBreakEnd);
-		teaBreakDetail.setProcessedTiming(rawTiming);
+		//teaBreakDetail.setProcessedTiming(rawTiming);
 		breakDetails.add(teaBreakDetail);
 		rawTiming.setBreakDetails(breakDetails);
 		rawTiming.setRecordCreatedDate(new Date());
@@ -60,7 +60,7 @@ public class TMSTestUtil {
 		DateTime lunchBreakStart = startDateTime.plusHours(3);
 		DateTime lunchBreakEnd = lunchBreakStart.plus(lunchBreakDuration);
 		BreakDetail lunchBreakDetail = new BreakDetail(BreakType.LUNCH,lunchBreakStart,lunchBreakEnd);
-		lunchBreakDetail.setProcessedTiming(rawTiming);
+		//lunchBreakDetail.setProcessedTiming(rawTiming);
 		breakDetails.add(lunchBreakDetail);
 		
 		
@@ -84,7 +84,7 @@ public class TMSTestUtil {
 		DateTime lunchBreakStart = startDateTime.plusHours(3);
 		DateTime lunchBreakEnd = lunchBreakStart.plus(duration);
 		BreakDetail lunchBreakDetail = new BreakDetail(BreakType.LUNCH,lunchBreakStart,lunchBreakEnd);
-		lunchBreakDetail.setProcessedTiming(rawTiming);
+		//lunchBreakDetail.setProcessedTiming(rawTiming);
 		breakDetails.add(lunchBreakDetail);
 		
 		
@@ -109,7 +109,7 @@ public class TMSTestUtil {
 		DateTime lunchBreakStart = startDateTime.plusHours(3);
 		DateTime lunchBreakEnd = lunchBreakStart.plus(new Duration(10*60*1000));
 		BreakDetail lunchBreakDetail = new BreakDetail(BreakType.LUNCH,lunchBreakStart,lunchBreakEnd);
-		lunchBreakDetail.setProcessedTiming(rawTiming);
+		//lunchBreakDetail.setProcessedTiming(rawTiming);
 		breakDetails.add(lunchBreakDetail);
 		
 		rawTiming.setBreakDetails(breakDetails);
@@ -133,7 +133,7 @@ public class TMSTestUtil {
 		DateTime lunchBreakStart = startDateTime.plusHours(3);
 		DateTime lunchBreakEnd = lunchBreakStart.plus(new Duration(10*60*1000));
 		BreakDetail lunchBreakDetail = new BreakDetail(BreakType.LUNCH,lunchBreakStart,lunchBreakEnd);
-		lunchBreakDetail.setProcessedTiming(rawTiming);
+		//lunchBreakDetail.setProcessedTiming(rawTiming);
 		breakDetails.add(lunchBreakDetail);
 		
 		rawTiming.setBreakDetails(breakDetails);

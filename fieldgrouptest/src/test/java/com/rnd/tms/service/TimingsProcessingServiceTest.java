@@ -17,11 +17,11 @@ import com.rnd.tms.FieldGroupTestApplication;
 import com.rnd.tms.business.dto.TimingsProcessDTO;
 import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 import com.rnd.tms.data.entity.BreakDetail;
+import com.rnd.tms.data.entity.BreakDetail.BreakType;
 import com.rnd.tms.data.entity.Client;
 import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.TimingProfile;
-import com.rnd.tms.data.enums.BreakType;
-import com.rnd.tms.data.repository.BreakDetailRepository;
+//import com.rnd.tms.data.repository.BreakDetailRepository;
 import com.rnd.tms.data.repository.ClientRepository;
 import com.rnd.tms.data.repository.ProcessedTimingRepository;
 import com.rnd.tms.data.util.TMSTestUtil;
@@ -38,8 +38,8 @@ public class TimingsProcessingServiceTest {
 	@Autowired
 	private ProcessedTimingRepository processedTimingRepository;
 
-	@Autowired
-	private BreakDetailRepository breakDetailRepository;
+/*	@Autowired
+	private BreakDetailRepository breakDetailRepository;*/
 	
 	@Autowired 
 	private ClientRepository clientRepository;
@@ -57,8 +57,8 @@ public class TimingsProcessingServiceTest {
 		}
 		
 		BreakDetail breakDetail = new BreakDetail(BreakType.DINNER, new DateTime(2015,11,17,21,00), new DateTime(2015,11,17,21,50));
-		breakDetail.setProcessedTiming(processedTiming);
-		breakDetail = breakDetailRepository.save(breakDetail);
+		//breakDetail.setProcessedTiming(processedTiming);
+		//breakDetail = breakDetailRepository.save(breakDetail);
 		Client client = new Client("ClientCreatedForDummyTimingProfile");
 		client = clientRepository.save(client);
 		TimingProfile timingProfile = TMSTestUtil.getDummyTimingProfile(client);
@@ -68,8 +68,8 @@ public class TimingsProcessingServiceTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		assertEquals(breakDetail.getActualBreakDuration(),new Duration(breakDetail.getBreakStart(),breakDetail.getBreakEnd()));
-		assertEquals(timingProfile.getMinBreakDuration(), breakDetail.getEffectiveBreakDuration());
+		assertEquals(breakDetail.getActual(),new Duration(breakDetail.getBreakStart(),breakDetail.getBreakEnd()));
+		assertEquals(timingProfile.getMinBreakDuration(), breakDetail.getEffective());
 	}
 	
 	@Test

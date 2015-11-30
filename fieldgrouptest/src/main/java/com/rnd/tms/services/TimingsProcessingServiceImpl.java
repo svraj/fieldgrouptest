@@ -12,11 +12,10 @@ import com.rnd.tms.business.dto.ProcessedTimingProcessResult;
 import com.rnd.tms.business.dto.TimingsProcessDTO;
 import com.rnd.tms.business.enums.TimingRecordProcessStatus;
 import com.rnd.tms.data.entity.BreakDetail;
+import com.rnd.tms.data.entity.BreakDetail.BreakType;
 import com.rnd.tms.data.entity.Employee;
 import com.rnd.tms.data.entity.ProcessedTiming;
 import com.rnd.tms.data.entity.TimingProfile;
-import com.rnd.tms.data.enums.BreakType;
-import com.rnd.tms.data.repository.BreakDetailRepository;
 import com.rnd.tms.data.repository.ProcessedTimingRepository;
 import com.rnd.tms.exceptions.TmsBusinessException;
 import com.rnd.tms.util.TMSUtils;
@@ -27,8 +26,8 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService {
 	@Autowired
 	private ProcessedTimingRepository processedTimingRepository;
 
-	@Autowired
-	private BreakDetailRepository breakDetailRepository;
+	/*@Autowired
+	private BreakDetailRepository breakDetailRepository;*/
 
 	public TimingsProcessDTO processProcessedTiming(ProcessedTiming processedTiming) {
 		TimingsProcessDTO timingsProcessDTO = new TimingsProcessDTO();
@@ -165,10 +164,10 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService {
 					//processedTiming.setLunchEnd(breakDetail.getBreakEnd());
 					breakDetail = calculateAndUpdateBreakDetail(breakDetail, processedTiming.getTimingProfile());
 					//processedTiming.setActualLunchDuration(breakDetail.getActualBreakDuration());
-					lunchBreakDuration = breakDetail.getEffectiveBreakDuration();
+					lunchBreakDuration = breakDetail.getEffective();
 					//processedTiming.setEffectiveLunchDuration(lunchBreakDuration);
 				} else {
-					otherBreaksDuration = otherBreaksDuration.plus(breakDetail.getEffectiveBreakDuration());
+					otherBreaksDuration = otherBreaksDuration.plus(breakDetail.getEffective());
 				}
 			}
 		}
@@ -194,9 +193,9 @@ public class TimingsProcessingServiceImpl implements TimingsProcessingService {
 			Duration effectiveBreakDuration = TMSUtils.calculateEffectiveBreakDuration(calculatedBreakDetail,
 					timingProfile);
 			Duration actualBreakDuration = TMSUtils.calculateActualBreakDuration(calculatedBreakDetail);
-			breakDetail.setActualBreakDuration(actualBreakDuration);
-			breakDetail.setEffectiveBreakDuration(effectiveBreakDuration);
-			breakDetailRepository.save(breakDetail);
+			breakDetail.setActual(actualBreakDuration);
+			breakDetail.setEffective(effectiveBreakDuration);
+			//breakDetailRepository.save(breakDetail);
 		}
 		return calculatedBreakDetail;
 	}

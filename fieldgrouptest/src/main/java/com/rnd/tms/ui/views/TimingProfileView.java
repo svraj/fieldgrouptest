@@ -75,7 +75,7 @@ public class TimingProfileView extends VerticalLayout implements View{
 
 		grid.setHeight(300, Unit.PIXELS);
 		grid.setWidth(100, Unit.PERCENTAGE);
-		grid.setColumns("id", "client.companyName","profileName",
+		grid.setColumns("id", "employee.companyName","profileName",
 				"dailyWorkHours","minBreakDuration","overtimeAllowed");
 		
 		filter.setInputPrompt("Filter by Company name");
@@ -119,7 +119,7 @@ public class TimingProfileView extends VerticalLayout implements View{
 		if (StringUtils.isEmpty(text)) {
 			container = new BeanItemContainer(TimingProfile.class, repo.findAll());
 		}
-		container.addNestedContainerProperty("client.companyName");
+		container.addNestedContainerProperty("employee.companyName");
 		
 	   grid.setContainerDataSource(container);
        
